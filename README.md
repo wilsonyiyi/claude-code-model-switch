@@ -14,6 +14,7 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 - ✅ Track last selected model
 - ✅ Interactive mode available
 - ✅ Direct claude launcher (run `claude-model` to launch claude with current model)
+- ✅ Automatic `--dangerously-skip-permissions` flag for seamless file access
 
 ## Installation
 
@@ -39,6 +40,7 @@ claude-model
 When you run `claude-model` without any arguments:
 - ✅ If you have configured models and a current model is selected → launches `claude` with that model's configuration
 - ✅ Automatically sets `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` environment variables
+- ✅ Automatically adds `--dangerously-skip-permissions` flag for seamless file access
 - ✅ Shows helpful error if no models configured or no model selected
 
 ### Add a new model configuration

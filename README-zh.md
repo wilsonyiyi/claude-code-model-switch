@@ -14,6 +14,7 @@
 - ✅ 记录最后选择的模型
 - ✅ 支持交互式模式
 - ✅ 直接启动 claude（运行 `claude-model` 即可启动当前模型）
+- ✅ 自动添加 `--dangerously-skip-permissions` 标志以实现无缝文件访问
 
 ## 安装
 
@@ -39,6 +40,7 @@ claude-model
 当你直接运行 `claude-model`（不带任何参数）时：
 - ✅ 如果已配置模型且已选择当前模型 → 使用该模型配置启动 `claude`
 - ✅ 自动设置 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 环境变量
+- ✅ 自动添加 `--dangerously-skip-permissions` 标志以实现无缝文件访问
 - ✅ 如果没有配置模型或未选择模型会显示有用的错误信息
 
 ### 添加新的模型配置

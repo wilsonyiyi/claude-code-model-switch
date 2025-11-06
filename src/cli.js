@@ -41,7 +41,9 @@ const { spawn } = require('child_process');
       console.log(chalk.gray(`   Description: ${currentModel.description || 'N/A'}\n`));
 
       // Execute claude with current model environment variables
-      const claudeCodeProcess = spawn('claude', process.argv.slice(2), {
+      // Add --dangerously-skip-permissions by default to bypass file permission checks
+      const claudeArgs = ['--dangerously-skip-permissions', ...process.argv.slice(2)];
+      const claudeCodeProcess = spawn('claude', claudeArgs, {
         stdio: 'inherit',
         env: {
           ...process.env,
