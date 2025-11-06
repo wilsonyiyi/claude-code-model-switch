@@ -54,22 +54,29 @@ echo ""
 echo "----------------------------------------"
 echo ""
 
+# Test direct run (this will fail if claude is not installed, but shows the feature)
+echo "8. Testing direct run (launches claude with current model):"
+node src/cli.js 2>&1 | head -5
+echo ""
+echo "----------------------------------------"
+echo ""
+
 # Show history
-echo "8. Showing change history:"
+echo "9. Showing change history:"
 node src/cli.js history
 echo ""
 echo "----------------------------------------"
 echo ""
 
 # Remove dev model
-echo "9. Removing 'dev' model:"
+echo "10. Removing 'dev' model:"
 echo "y" | node src/cli.js remove dev 2>&1 | grep -E "✓|Model|Cancelled" || echo "Removed successfully"
 echo ""
 echo "----------------------------------------"
 echo ""
 
 # List remaining models
-echo "10. Listing remaining configurations:"
+echo "11. Listing remaining configurations:"
 node src/cli.js list
 echo ""
 echo "----------------------------------------"

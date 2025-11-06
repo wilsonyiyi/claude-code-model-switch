@@ -1,5 +1,5 @@
 {
-  "name": "claude-code-model-manager",
+  "name": "claude-model-manager",
   "version": "1.0.0",
   "description": "A CLI tool to manage Claude Code model switching with multiple configurations",
   "main": "src/index.js",

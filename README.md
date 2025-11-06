@@ -13,6 +13,7 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 - ✅ Local data storage
 - ✅ Track last selected model
 - ✅ Interactive mode available
+- ✅ Direct claude launcher (run `claude-model` to launch claude with current model)
 
 ## Installation
 
@@ -27,6 +28,18 @@ npm install .
 ```
 
 ## Usage Examples
+
+### Quick Start - Run claude with current model
+
+```bash
+# Simply run claude-model directly - it will launch claude with your current model
+claude-model
+```
+
+When you run `claude-model` without any arguments:
+- ✅ If you have configured models and a current model is selected → launches `claude` with that model's configuration
+- ✅ Automatically sets `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` environment variables
+- ✅ Shows helpful error if no models configured or no model selected
 
 ### Add a new model configuration
 

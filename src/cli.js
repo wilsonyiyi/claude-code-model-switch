@@ -3,6 +3,7 @@
 const { Command } = require('commander');
 const chalk = require('chalk');
 const ModelManager = require('./modelManager');
+const { spawn } = require('child_process');
 
 // Dynamic import for inquirer to avoid ESM/CJS conflict
 (async () => {
@@ -16,6 +17,60 @@ const ModelManager = require('./modelManager');
     .name('claude-model')
     .description('Claude Code model configuration manager')
     .version('1.0.0');
+
+  // Check if no arguments provided - if so, try to launch claude
+  const args = process.argv.slice(2);
+  if (args.length === 0) {
+    try {
+      const currentModel = await modelManager.getCurrentModel();
+      const models = await modelManager.listModels();
+
+      if (models.length === 0) {
+        console.log(chalk.yellow('No models configured. Use "claude-model add" to add one.'));
+        program.help();
+        process.exit(0);
+      }
+
+      if (!currentModel) {
+        console.log(chalk.yellow('No model currently selected. Use "claude-model switch <name>" to select one.'));
+        program.help();
+        process.exit(0);
+      }
+
+      console.log(chalk.blue(`\n🚀 Launching claude with model: ${chalk.bold(currentModel.name)}`));
+      console.log(chalk.gray(`   Description: ${currentModel.description || 'N/A'}\n`));
+
+      // Execute claude with current model environment variables
+      const claudeCodeProcess = spawn('claude', process.argv.slice(2), {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          ANTHROPIC_AUTH_TOKEN: currentModel.token,
+          ANTHROPIC_BASE_URL: currentModel.baseUrl
+        }
+      });
+
+      claudeCodeProcess.on('error', (error) => {
+        if (error.code === 'ENOENT') {
+          console.error(chalk.red('❌ Error: "claude" command not found.'));
+          console.log(chalk.yellow('\nPlease ensure claude is installed:'));
+          console.log(chalk.gray('  npm install -g claude\n'));
+        } else {
+          console.error(chalk.red(`❌ Error launching claude: ${error.message}`));
+        }
+        process.exit(1);
+      });
+
+      claudeCodeProcess.on('exit', (code) => {
+        process.exit(code);
+      });
+
+      return; // Don't continue with command parsing
+    } catch (error) {
+      console.error(chalk.red(`Error: ${error.message}`));
+      process.exit(1);
+    }
+  }
 
   // Add command
   program
@@ -340,5 +395,5 @@ const ModelManager = require('./modelManager');
   }
 
   // Parse arguments
-  program.parse();
+  const argv = program.parse(process.argv);
 })();
