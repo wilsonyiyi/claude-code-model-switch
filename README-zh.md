@@ -93,6 +93,7 @@ claude-model history --limit 50
 你的模型配置以 JSON 格式存储：
 
 **config.json:**
+
 ```json
 {
   "models": [
@@ -113,6 +114,7 @@ claude-model history --limit 50
 ```
 
 **history.json:**
+
 ```json
 {
   "changes": [
@@ -138,6 +140,7 @@ claude-model i
 ```
 
 交互式模式提供：
+
 - 菜单驱动界面
 - 简单的模型切换
 - 安全的删除操作（含确认提示）
