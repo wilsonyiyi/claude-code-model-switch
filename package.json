@@ -1,6 +1,6 @@
 {
-  "name": "claude-code-model-switch",
-  "version": "1.0.0",
+  "name": "@wilson_janet/claude-code-model-switch",
+  "version": "1.0.1",
   "description": "A CLI tool to manage Claude Code model switching with multiple configurations",
   "main": "src/index.js",
   "bin": {
@@ -19,9 +19,16 @@
   ],
   "author": "Wilsonyiyi",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wilsonyiyi/claude-code-model-switch.git"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "commander": "^11.1.0",

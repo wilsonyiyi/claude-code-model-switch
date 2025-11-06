@@ -18,15 +18,60 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 
 ## Installation
 
+### Prerequisites
+
+- **Node.js** (v18 or higher) - [Download here](https://nodejs.org/)
+- **npm** (comes with Node.js)
+- **claude** CLI tool (optional, for direct launching) - [Installation guide](https://docs.anthropic.com/claude-cli)
+
+### Install Globally (Recommended)
+
+Global installation allows you to use `claude-model` from anywhere:
+
 ```bash
-npm install -g .
+npm install -g @wilson_janet/claude-code-model-switch
 ```
 
-Or install locally:
+After installation, the `claude-model` command will be available globally.
+
+### Install Locally
+
+Local installation installs the tool in your current project:
 
 ```bash
-npm install .
+npm install @wilson_janet/claude-code-model-switch
 ```
+
+Then use it via:
+```bash
+npx claude-model
+# or
+node src/cli.js
+```
+
+### Verify Installation
+
+```bash
+claude-model --version
+# or
+cm --version
+
+claude-model --help
+# or
+cm --help
+```
+
+### Post-Installation
+
+1. **Add your first model configuration:**
+   ```bash
+   claude-model add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "My config"
+   ```
+
+2. **Start using claude with your model:**
+   ```bash
+   claude-model
+   ```
 
 ## Usage Examples
 
@@ -35,6 +80,8 @@ npm install .
 ```bash
 # Simply run claude-model directly - it will launch claude with your current model
 claude-model
+# or
+cm
 ```
 
 When you run `claude-model` without any arguments:
@@ -64,21 +111,29 @@ claude-model list
 ```bash
 # Switch to specific model
 claude-model switch my-config
+# or
+cm switch my-config
 
 # Interactive selection (shows list to choose from)
 claude-model switch
+# or
+cm switch
 ```
 
 ### Show current configuration
 
 ```bash
 claude-model current
+# or
+cm current
 ```
 
 ### Remove a configuration
 
 ```bash
 claude-model remove my-config
+# or
+cm remove my-config
 ```
 
 ### Show change history
@@ -89,6 +144,8 @@ claude-model history
 
 # Show last 50 changes
 claude-model history --limit 50
+# or
+cm history --limit 50
 ```
 
 ## Commands Reference

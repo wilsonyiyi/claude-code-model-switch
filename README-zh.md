@@ -18,15 +18,55 @@
 
 ## 安装
 
+### 前置要求
+
+- **Node.js** (v18 或更高版本) - [下载地址](https://nodejs.org/zh-cn/)
+- **npm** (随 Node.js 一起提供)
+- **claude** CLI 工具（可选，用于直接启动）- [安装指南](https://docs.anthropic.com/claude-cli)
+
+### 全局安装（推荐）
+
+全局安装让你可以在任何地方使用 `claude-model`：
+
 ```bash
-npm install -g .
+npm install -g @wilson_janet/claude-code-model-switch
 ```
 
-或本地安装：
+安装后，`claude-model` 命令将在全局可用。
+
+### 本地安装
+
+本地安装将工具安装到当前项目中：
 
 ```bash
-npm install .
+npm install @wilson_janet/claude-code-model-switch
 ```
+
+然后通过以下方式使用：
+```bash
+npx claude-model
+# 或
+node src/cli.js
+```
+
+### 验证安装
+
+```bash
+claude-model --version
+claude-model --help
+```
+
+### 安装后设置
+
+1. **添加你的第一个模型配置：**
+   ```bash
+   claude-model add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "我的配置"
+   ```
+
+2. **使用你的模型启动 claude：**
+   ```bash
+   claude-model
+   ```
 
 ## 使用示例
 
@@ -51,12 +91,16 @@ claude-model add --name my-config --token sk-ant-xxxxx --base-url https://api.an
 
 # 交互式模式（提示输入）
 claude-model interactive
+# 或者
+cm interactive
 ```
 
 ### 列出所有配置
 
 ```bash
 claude-model list
+# 或者
+cm list
 ```
 
 ### 切换到指定配置
@@ -67,18 +111,24 @@ claude-model switch my-config
 
 # 交互式选择（显示列表供选择）
 claude-model switch
+# 或者
+cm switch
 ```
 
 ### 显示当前配置
 
 ```bash
 claude-model current
+# 或者
+cm current
 ```
 
 ### 删除配置
 
 ```bash
 claude-model remove my-config
+# 或者
+cm remove my-config
 ```
 
 ### 显示变更历史
@@ -89,6 +139,8 @@ claude-model history
 
 # 显示最近 50 条记录
 claude-model history --limit 50
+# 或者
+cm history --limit 50
 ```
 
 ## 命令参考
