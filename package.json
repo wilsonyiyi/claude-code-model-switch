@@ -1,5 +1,5 @@
 {
-  "name": "claude-model-manager",
+  "name": "claude-code-model-switch",
   "version": "1.0.0",
   "description": "A CLI tool to manage Claude Code model switching with multiple configurations",
   "main": "src/index.js",
@@ -17,8 +17,12 @@
     "model",
     "cli"
   ],
-  "author": "",
+  "author": "Wilsonyiyi",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "dependencies": {
     "commander": "^11.1.0",
     "chalk": "^4.1.2",
