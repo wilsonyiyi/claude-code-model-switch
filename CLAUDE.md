@@ -13,7 +13,7 @@ npm start
 # or
 node src/cli.js
 # or
-claude-model (after global install)
+cc (after global install)
 
 # Run tests
 bash test.sh
@@ -29,7 +29,7 @@ bash demo.sh
 - **Main entry**: `src/cli.js`
 - **Version**: 1.0.1
 - **Node requirement**: >=18.0.0
-- **Binaries**: `claude-model` and `cm`
+- **Binary**: `cc`
 
 ## Code Architecture
 
@@ -63,14 +63,14 @@ This is a simple 3-layer architecture:
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `add` | Add new model config | `claude-model add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
-| `list` | List all models | `claude-model list` |
-| `switch` | Switch model (interactive if no name) | `claude-model switch` or `claude-model switch dev` |
-| `current` | Show current model | `claude-model current` |
-| `remove` | Remove model (with confirmation) | `claude-model remove dev` |
-| `history` | Show change history | `claude-model history -l 20` |
-| `interactive` | Menu-driven mode | `claude-model interactive` |
-| *(no args)* | Launch claude with current model | `claude-model` |
+| `add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `list` | List all models | `cc list` |
+| `switch` | Switch model (interactive if no name) | `cc switch` or `cc switch dev` |
+| `current` | Show current model | `cc current` |
+| `remove` | Remove model (with confirmation) | `cc remove dev` |
+| `history` | Show change history | `cc history -l 20` |
+| `interactive` | Menu-driven mode | `cc interactive` |
+| *(no args)* | Launch claude with current model | `cc` |
 
 ## Data Model
 
@@ -112,19 +112,21 @@ This is a simple 3-layer architecture:
 ## Key Implementation Details
 
 ### Automatic Claude Launch
-When invoked without arguments (`claude-model` with no args):
+When invoked without arguments (`cc` with no args):
 1. Checks if models exist and one is selected
 2. Sets environment variables: `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`
 3. Launches `claude --dangerously-skip-permissions` with inherited stdio
 4. Includes error handling for missing `claude` command
 
 ### Interactive Mode
+
 - Uses `inquirer` for prompts (dynamic ESM import to avoid CJS conflicts)
 - Switch command: interactive if no model name provided
 - Remove command: includes confirmation prompt
 - Full interactive mode: menu-driven experience via `interactive` command
 
 ### Error Handling
+
 - Try-catch blocks wrap async operations
 - Errors displayed in red with `chalk`
 - Graceful handling of missing files/directories
@@ -166,22 +168,22 @@ When invoked without arguments (`claude-model` with no args):
 
 ### Add a new model:
 ```bash
-node src/cli.js add -n production -t sk-ant-xxx -b https://api.anthropic.com -d "Production config"
+cc add -n production -t sk-ant-xxx -b https://api.anthropic.com -d "Production config"
 ```
 
 ### Switch models interactively:
 ```bash
-node src/cli.js switch
+cc switch
 ```
 
 ### Launch claude with current model:
 ```bash
-node src/cli.js
+cc
 ```
 
 ### View change history:
 ```bash
-node src/cli.js history -l 50
+cc history -l 50
 ```
 
 ### Run all tests:

@@ -13,7 +13,7 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 - ✅ Local data storage
 - ✅ Track last selected model
 - ✅ Interactive mode available
-- ✅ Direct claude launcher (run `claude-model` to launch claude with current model)
+- ✅ Direct claude launcher (run `cc` to launch claude with current model)
 - ✅ Automatic `--dangerously-skip-permissions` flag for seamless file access
 
 ## Installation
@@ -26,13 +26,13 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 
 ### Install Globally (Recommended)
 
-Global installation allows you to use `claude-model` from anywhere:
+Global installation allows you to use `cc` from anywhere:
 
 ```bash
 npm install -g @wilson_janet/claude-code-model-switch
 ```
 
-After installation, the `claude-model` command will be available globally.
+After installation, the `cc` command will be available globally.
 
 ### Install Locally
 
@@ -44,7 +44,7 @@ npm install @wilson_janet/claude-code-model-switch
 
 Then use it via:
 ```bash
-npx claude-model
+npx cc
 # or
 node src/cli.js
 ```
@@ -52,25 +52,21 @@ node src/cli.js
 ### Verify Installation
 
 ```bash
-claude-model --version
-# or
-cm --version
+cc --version
 
-claude-model --help
-# or
-cm --help
+cc --help
 ```
 
 ### Post-Installation
 
 1. **Add your first model configuration:**
    ```bash
-   claude-model add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "My config"
+   cc add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "My config"
    ```
 
 2. **Start using claude with your model:**
    ```bash
-   claude-model
+   cc
    ```
 
 ## Usage Examples
@@ -78,13 +74,11 @@ cm --help
 ### Quick Start - Run claude with current model
 
 ```bash
-# Simply run claude-model directly - it will launch claude with your current model
-claude-model
-# or
-cm
+# Simply run cc directly - it will launch claude with your current model
+cc
 ```
 
-When you run `claude-model` without any arguments:
+When you run `cc` without any arguments:
 - ✅ If you have configured models and a current model is selected → launches `claude` with that model's configuration
 - ✅ Automatically sets `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` environment variables
 - ✅ Automatically adds `--dangerously-skip-permissions` flag for seamless file access
@@ -94,58 +88,48 @@ When you run `claude-model` without any arguments:
 
 ```bash
 # Command line mode
-claude-model add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "My Claude config"
+cc add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "My Claude config"
 
 # Interactive mode (prompts for inputs)
-claude-model interactive
+cc interactive
 ```
 
 ### List all configurations
 
 ```bash
-claude-model list
+cc list
 ```
 
 ### Switch to a configuration
 
 ```bash
 # Switch to specific model
-claude-model switch my-config
-# or
-cm switch my-config
+cc switch my-config
 
 # Interactive selection (shows list to choose from)
-claude-model switch
-# or
-cm switch
+cc switch
 ```
 
 ### Show current configuration
 
 ```bash
-claude-model current
-# or
-cm current
+cc current
 ```
 
 ### Remove a configuration
 
 ```bash
-claude-model remove my-config
-# or
-cm remove my-config
+cc remove my-config
 ```
 
 ### Show change history
 
 ```bash
 # Show last 20 changes (default)
-claude-model history
+cc history
 
 # Show last 50 changes
-claude-model history --limit 50
-# or
-cm history --limit 50
+cc history --limit 50
 ```
 
 ## Commands Reference
@@ -158,7 +142,7 @@ cm history --limit 50
 | `current` | Show current configuration | - |
 | `remove` | Remove a configuration | `<name>` (required) |
 | `history` | Show configuration change history | `-l, --limit <number>` |
-| `interactive` / `i` | Interactive mode menu | - |
+| `interactive` | Interactive mode menu | - |
 
 ## Configuration File Structure
 
@@ -204,9 +188,7 @@ Your model configurations are stored in JSON format:
 Launch interactive mode for a guided experience:
 
 ```bash
-claude-model interactive
-# or
-claude-model i
+cc interactive
 ```
 
 Interactive mode provides:
@@ -227,28 +209,28 @@ Configurations are stored locally in:
 
 ```bash
 # Development environment
-claude-model add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "Development"
+cc add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "Development"
 
 # Staging environment
-claude-model add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "Staging"
+cc add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "Staging"
 
 # Production environment
-claude-model add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "Production"
+cc add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "Production"
 
 # Switch between environments easily
-claude-model switch dev
-claude-model switch staging
-claude-model switch production
+cc switch dev
+cc switch staging
+cc switch production
 ```
 
 ### Using with Different API Endpoints
 
 ```bash
 # Main Anthropic API
-claude-model add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
+cc add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
 
 # Custom endpoint (if applicable)
-claude-model add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
+cc add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
 ```
 
 ## Safety Notes
@@ -270,7 +252,7 @@ Ensure you have write permissions to your home directory and config location.
 
 ### Model not found
 
-Use `claude-model list` to see all available configurations.
+Use `cc list` to see all available configurations.
 
 ## License
 

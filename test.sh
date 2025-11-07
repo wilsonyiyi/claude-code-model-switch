@@ -7,7 +7,7 @@ echo ""
 
 # Test 1: Add model
 echo "Test 1: Adding model"
-node src/cli.js add --name test1 --token sk-test-1 --base-url https://api.anthropic.com --description "Test model 1"
+cc add --name test1 --token sk-test-1 --base-url https://api.anthropic.com --description "Test model 1"
 if [ $? -eq 0 ]; then
     echo "✓ Add model: PASSED"
 else
@@ -18,7 +18,7 @@ echo ""
 
 # Test 2: List models
 echo "Test 2: Listing models"
-node src/cli.js list > /dev/null
+cc list > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ List models: PASSED"
 else
@@ -29,7 +29,7 @@ echo ""
 
 # Test 3: Switch model
 echo "Test 3: Switching model"
-node src/cli.js switch test1 > /dev/null
+cc switch test1 > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ Switch model: PASSED"
 else
@@ -40,7 +40,7 @@ echo ""
 
 # Test 4: Current model
 echo "Test 4: Getting current model"
-node src/cli.js current > /dev/null
+cc current > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ Current model: PASSED"
 else
@@ -51,7 +51,7 @@ echo ""
 
 # Test 5: History
 echo "Test 5: Viewing history"
-node src/cli.js history > /dev/null
+cc history > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ History: PASSED"
 else
@@ -62,7 +62,7 @@ echo ""
 
 # Test 6: Remove model
 echo "Test 6: Removing model"
-echo "y" | node src/cli.js remove test1 > /dev/null 2>&1
+echo "y" | cc remove test1 > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "✓ Remove model: PASSED"
 else

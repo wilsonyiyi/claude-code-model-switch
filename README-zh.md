@@ -13,7 +13,7 @@
 - ✅ 本地数据存储
 - ✅ 记录最后选择的模型
 - ✅ 支持交互式模式
-- ✅ 直接启动 claude（运行 `claude-model` 即可启动当前模型）
+- ✅ 直接启动 claude（运行 `cc` 即可启动当前模型）
 - ✅ 自动添加 `--dangerously-skip-permissions` 标志以实现无缝文件访问
 
 ## 安装
@@ -26,13 +26,13 @@
 
 ### 全局安装（推荐）
 
-全局安装让你可以在任何地方使用 `claude-model`：
+全局安装让你可以在任何地方使用 `cc`：
 
 ```bash
 npm install -g @wilson_janet/claude-code-model-switch
 ```
 
-安装后，`claude-model` 命令将在全局可用。
+安装后，`cc` 命令将在全局可用。
 
 ### 本地安装
 
@@ -44,7 +44,7 @@ npm install @wilson_janet/claude-code-model-switch
 
 然后通过以下方式使用：
 ```bash
-npx claude-model
+npx cc
 # 或
 node src/cli.js
 ```
@@ -52,20 +52,21 @@ node src/cli.js
 ### 验证安装
 
 ```bash
-claude-model --version
-claude-model --help
+cc --version
+
+cc --help
 ```
 
 ### 安装后设置
 
 1. **添加你的第一个模型配置：**
    ```bash
-   claude-model add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "我的配置"
+   cc add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "我的配置"
    ```
 
 2. **使用你的模型启动 claude：**
    ```bash
-   claude-model
+   cc
    ```
 
 ## 使用示例
@@ -73,11 +74,11 @@ claude-model --help
 ### 快速启动 - 直接运行 claude
 
 ```bash
-# 直接运行 claude-model - 它将使用当前模型配置启动 claude
-claude-model
+# 直接运行 cc - 它将使用当前模型配置启动 claude
+cc
 ```
 
-当你直接运行 `claude-model`（不带任何参数）时：
+当你直接运行 `cc`（不带任何参数）时：
 - ✅ 如果已配置模型且已选择当前模型 → 使用该模型配置启动 `claude`
 - ✅ 自动设置 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 环境变量
 - ✅ 自动添加 `--dangerously-skip-permissions` 标志以实现无缝文件访问
@@ -87,60 +88,48 @@ claude-model
 
 ```bash
 # 命令行模式
-claude-model add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "我的 Claude 配置"
+cc add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "我的 Claude 配置"
 
 # 交互式模式（提示输入）
-claude-model interactive
-# 或者
-cm interactive
+cc interactive
 ```
 
 ### 列出所有配置
 
 ```bash
-claude-model list
-# 或者
-cm list
+cc list
 ```
 
 ### 切换到指定配置
 
 ```bash
 # 切换到特定模型
-claude-model switch my-config
+cc switch my-config
 
 # 交互式选择（显示列表供选择）
-claude-model switch
-# 或者
-cm switch
+cc switch
 ```
 
 ### 显示当前配置
 
 ```bash
-claude-model current
-# 或者
-cm current
+cc current
 ```
 
 ### 删除配置
 
 ```bash
-claude-model remove my-config
-# 或者
-cm remove my-config
+cc remove my-config
 ```
 
 ### 显示变更历史
 
 ```bash
 # 显示最近 20 条记录（默认）
-claude-model history
+cc history
 
 # 显示最近 50 条记录
-claude-model history --limit 50
-# 或者
-cm history --limit 50
+cc history --limit 50
 ```
 
 ## 命令参考
@@ -153,7 +142,7 @@ cm history --limit 50
 | `current` | 显示当前配置 | - |
 | `remove` | 删除配置 | `<name>`（必需） |
 | `history` | 显示配置变更历史 | `-l, --limit <number>` |
-| `interactive` / `i` | 交互式模式菜单 | - |
+| `interactive` | 交互式模式菜单 | - |
 
 ## 配置文件结构
 
@@ -201,9 +190,7 @@ cm history --limit 50
 启动交互式模式获得引导式体验：
 
 ```bash
-claude-model interactive
-# 或
-claude-model i
+cc interactive
 ```
 
 交互式模式提供：
@@ -225,28 +212,28 @@ claude-model i
 
 ```bash
 # 开发环境
-claude-model add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "开发环境"
+cc add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "开发环境"
 
 # 测试环境
-claude-model add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "测试环境"
+cc add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "测试环境"
 
 # 生产环境
-claude-model add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "生产环境"
+cc add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "生产环境"
 
 # 在环境间轻松切换
-claude-model switch dev
-claude-model switch staging
-claude-model switch production
+cc switch dev
+cc switch staging
+cc switch production
 ```
 
 ### 使用不同 API 端点
 
 ```bash
 # 主要 Anthropic API
-claude-model add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
+cc add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
 
 # 自定义端点（如果适用）
-claude-model add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
+cc add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
 ```
 
 ## 安全说明
@@ -268,7 +255,7 @@ claude-model add --name custom --token sk-ant-xxx --base-url https://custom.endp
 
 ### 模型未找到
 
-使用 `claude-model list` 查看所有可用配置。
+使用 `cc list` 查看所有可用配置。
 
 ## 许可证
 
