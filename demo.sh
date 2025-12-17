@@ -33,9 +33,10 @@ echo ""
 echo "----------------------------------------"
 echo ""
 
-# Switch to dev
-echo "5. Switching to 'dev' model:"
-cc switch dev
+# Use dev model (switches and attempts to launch claude)
+echo "5. Using 'dev' model (switches and launches claude):"
+echo "   Note: This will fail if claude is not installed"
+cc use dev 2>&1 | head -3 || echo "   (Command failed as expected - claude not installed)"
 echo ""
 echo "----------------------------------------"
 echo ""
@@ -47,9 +48,9 @@ echo ""
 echo "----------------------------------------"
 echo ""
 
-# Switch to production
-echo "7. Switching to 'production' model:"
-cc switch production
+# Use production model
+echo "7. Using 'production' model (switches and attempts to launch claude):"
+cc use production 2>&1 | head -3 || echo "   (Command failed as expected - claude not installed)"
 echo ""
 echo "----------------------------------------"
 echo ""

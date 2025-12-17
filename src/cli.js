@@ -32,7 +32,7 @@ const { spawn } = require('child_process');
       }
 
       if (!currentModel) {
-        console.log(chalk.yellow('No model currently selected. Use "cc switch <name>" to select one.'));
+        console.log(chalk.yellow('No model currently selected. Use "cc use <name>" to select one.'));
         program.help();
         process.exit(0);
       }
@@ -144,10 +144,10 @@ const { spawn } = require('child_process');
       }
     });
 
-  // Switch command
+  // Use command
   program
-    .command('switch')
-    .description('Switch to a model configuration')
+    .command('use')
+    .description('Switch to a model configuration and launch Claude')
     .argument('[name]', 'Model name (interactive mode if not specified)')
     .action(async (name) => {
       try {
@@ -178,8 +178,57 @@ const { spawn } = require('child_process');
           modelName = answer.model;
         }
 
-        await modelManager.switchModel(modelName);
+        const selectedModel = await modelManager.switchModel(modelName);
         console.log(chalk.green(`✓ Switched to model: ${modelName}`));
+
+        // Launch Claude with the selected model
+        console.log(chalk.blue(`\n🚀 Launching claude with model: ${chalk.bold(selectedModel.name)}`));
+        console.log(chalk.gray(`   Description: ${selectedModel.description || 'N/A'}`));
+
+        // Log model configurations if they exist
+        if (selectedModel.defaultOpusModel || selectedModel.defaultSonnetModel || selectedModel.defaultHaikuModel) {
+          console.log(chalk.gray('   Model configurations:'));
+          if (selectedModel.defaultOpusModel) {
+            console.log(chalk.gray(`   - Opus: ${selectedModel.defaultOpusModel}`));
+          }
+          if (selectedModel.defaultSonnetModel) {
+            console.log(chalk.gray(`   - Sonnet: ${selectedModel.defaultSonnetModel}`));
+          }
+          if (selectedModel.defaultHaikuModel) {
+            console.log(chalk.gray(`   - Haiku: ${selectedModel.defaultHaikuModel}`));
+          }
+        }
+        console.log('');
+
+        // Execute claude with current model environment variables
+        // Add --dangerously-skip-permissions by default to bypass file permission checks
+        const claudeArgs = ['--dangerously-skip-permissions', ...process.argv.slice(3)]; // Skip 'use' command and model name
+        const claudeCodeProcess = spawn('claude', claudeArgs, {
+          stdio: 'inherit',
+          env: {
+            ...process.env,
+            ANTHROPIC_AUTH_TOKEN: selectedModel.token,
+            ANTHROPIC_BASE_URL: selectedModel.baseUrl,
+            ...(selectedModel.defaultOpusModel && { ANTHROPIC_DEFAULT_OPUS_MODEL: selectedModel.defaultOpusModel }),
+            ...(selectedModel.defaultSonnetModel && { ANTHROPIC_DEFAULT_SONNET_MODEL: selectedModel.defaultSonnetModel }),
+            ...(selectedModel.defaultHaikuModel && { ANTHROPIC_DEFAULT_HAIKU_MODEL: selectedModel.defaultHaikuModel })
+          }
+        });
+
+        claudeCodeProcess.on('error', (error) => {
+          if (error.code === 'ENOENT') {
+            console.error(chalk.red('❌ Error: "claude" command not found.'));
+            console.log(chalk.yellow('\nPlease ensure claude is installed:'));
+            console.log(chalk.gray('  npm install -g claude\\n'));
+          } else {
+            console.error(chalk.red(`Error launching claude: ${error.message}`));
+          }
+          process.exit(1);
+        });
+
+        claudeCodeProcess.on('exit', (code) => {
+          process.exit(code);
+        });
       } catch (error) {
         console.error(chalk.red(`Error: ${error.message}`));
         process.exit(1);
@@ -287,7 +336,7 @@ const { spawn } = require('child_process');
           choices: [
             { name: 'Add a new model', value: 'add' },
             { name: 'List all models', value: 'list' },
-            { name: 'Switch to a model', value: 'switch' },
+            { name: 'Use a model (switch + launch)', value: 'use' },
             { name: 'Show current model', value: 'current' },
             { name: 'Remove a model', value: 'remove' },
             { name: 'View change history', value: 'history' },
@@ -369,7 +418,7 @@ const { spawn } = require('child_process');
         break;
       }
 
-      case 'switch': {
+      case 'use': {
         if (models.length === 0) {
           console.log(chalk.yellow('\nNo models configured. Add one first!'));
           break;
@@ -385,8 +434,55 @@ const { spawn } = require('child_process');
         ]);
 
         try {
-          await modelManager.switchModel(answer.model);
+          const selectedModel = await modelManager.switchModel(answer.model);
           console.log(chalk.green(`\n✓ Switched to model: ${answer.model}`));
+
+          // Launch Claude
+          console.log(chalk.blue(`\n🚀 Launching claude with model: ${chalk.bold(selectedModel.name)}`));
+          console.log(chalk.gray(`   Description: ${selectedModel.description || 'N/A'}`));
+
+          if (selectedModel.defaultOpusModel || selectedModel.defaultSonnetModel || selectedModel.defaultHaikuModel) {
+            console.log(chalk.gray('   Model configurations:'));
+            if (selectedModel.defaultOpusModel) {
+              console.log(chalk.gray(`   - Opus: ${selectedModel.defaultOpusModel}`));
+            }
+            if (selectedModel.defaultSonnetModel) {
+              console.log(chalk.gray(`   - Sonnet: ${selectedModel.defaultSonnetModel}`));
+            }
+            if (selectedModel.defaultHaikuModel) {
+              console.log(chalk.gray(`   - Haiku: ${selectedModel.defaultHaikuModel}`));
+            }
+          }
+          console.log('');
+
+          // Execute claude
+          const claudeArgs = ['--dangerously-skip-permissions'];
+          const claudeCodeProcess = spawn('claude', claudeArgs, {
+            stdio: 'inherit',
+            env: {
+              ...process.env,
+              ANTHROPIC_AUTH_TOKEN: selectedModel.token,
+              ANTHROPIC_BASE_URL: selectedModel.baseUrl,
+              ...(selectedModel.defaultOpusModel && { ANTHROPIC_DEFAULT_OPUS_MODEL: selectedModel.defaultOpusModel }),
+              ...(selectedModel.defaultSonnetModel && { ANTHROPIC_DEFAULT_SONNET_MODEL: selectedModel.defaultSonnetModel }),
+              ...(selectedModel.defaultHaikuModel && { ANTHROPIC_DEFAULT_HAIKU_MODEL: selectedModel.defaultHaikuModel })
+            }
+          });
+
+          claudeCodeProcess.on('error', (error) => {
+            if (error.code === 'ENOENT') {
+              console.error(chalk.red('❌ Error: "claude" command not found.'));
+              console.log(chalk.yellow('\nPlease ensure claude is installed:'));
+              console.log(chalk.gray('  npm install -g claude\\n'));
+            } else {
+              console.error(chalk.red(`Error launching claude: ${error.message}`));
+            }
+            process.exit(1);
+          });
+
+          claudeCodeProcess.on('exit', (code) => {
+            process.exit(code);
+          });
         } catch (error) {
           console.error(chalk.red(`\nError: ${error.message}`));
         }

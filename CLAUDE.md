@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Attention
+
+- Do not modify the config.json file under claude-model-manager directory in the root directory.
+
 ## Quick Start
 
 ```bash

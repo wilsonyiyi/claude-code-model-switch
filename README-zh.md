@@ -75,7 +75,7 @@ cc add -n production \
 | `cc` | 使用当前模型启动 claude | `cc` |
 | `cc add` | 添加新的模型配置 | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
 | `cc list` | 列出所有模型 | `cc list` |
-| `cc switch [name]` | 切换模型（无名称时进入交互模式） | `cc switch` 或 `cc switch dev` |
+| `cc use [name]` | 切换模型并启动 Claude（无名称时进入交互模式） | `cc use` 或 `cc use dev` |
 | `cc current` | 显示当前模型 | `cc current` |
 | `cc history` | 显示变更历史 | `cc history -l 20` |
 | `cc interactive` | 菜单驱动模式 | `cc interactive` |
@@ -91,8 +91,8 @@ cc add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "测试环�
 cc add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "生产环境"
 
 # 在它们之间切换
-cc switch dev
-cc switch production
+cc use dev
+cc use production
 ```
 
 ### 交互式模式

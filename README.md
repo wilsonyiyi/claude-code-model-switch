@@ -74,7 +74,7 @@ If not specified, Claude Code will use its official default values.
 |---------|-------------|---------|
 | `cc` | Launch claude with current model | `cc` |
 | `cc add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
-| `cc switch [name]` | Switch model (interactive if no name) | `cc switch` or `cc switch dev` |
+| `cc use [name]` | Switch model and launch Claude (interactive if no name) | `cc use` or `cc use dev` |
 | `cc current` | Show current model | `cc current` |
 | `cc history` | Show change history | `cc history -l 20` |
 | `cc interactive` | Menu-driven mode | `cc interactive` |
@@ -90,8 +90,8 @@ cc add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "Staging"
 cc add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "Production"
 
 # Switch between them
-cc switch dev
-cc switch production
+cc use dev
+cc use production
 ```
 
 ### Interactive Mode
