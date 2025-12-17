@@ -14,7 +14,7 @@ const { spawn } = require('child_process');
   const modelManager = new ModelManager();
 
   program
-    .name('cc')
+    .name('cm')
     .description('Claude Code model configuration manager')
     .version('1.0.0');
 
@@ -26,13 +26,13 @@ const { spawn } = require('child_process');
       const models = await modelManager.listModels();
 
       if (models.length === 0) {
-        console.log(chalk.yellow('No models configured. Use "cc add" to add one.'));
+        console.log(chalk.yellow('No models configured. Use "cm add" to add one.'));
         program.help();
         process.exit(0);
       }
 
       if (!currentModel) {
-        console.log(chalk.yellow('No model currently selected. Use "cc use <name>" to select one.'));
+        console.log(chalk.yellow('No model currently selected. Use "cm use <name>" to select one.'));
         program.help();
         process.exit(0);
       }
@@ -129,7 +129,7 @@ const { spawn } = require('child_process');
         const currentModel = await modelManager.getCurrentModel();
 
         if (models.length === 0) {
-          console.log(chalk.yellow('No models configured. Use "cc add" to add one.'));
+          console.log(chalk.yellow('No models configured. Use "cm add" to add one.'));
           return;
         }
 
@@ -157,7 +157,7 @@ const { spawn } = require('child_process');
           const models = await modelManager.listModels();
 
           if (models.length === 0) {
-            console.log(chalk.yellow('No models configured. Use "cc add" to add one.'));
+            console.log(chalk.yellow('No models configured. Use "cm add" to add one.'));
             return;
           }
 

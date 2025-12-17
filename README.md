@@ -13,7 +13,7 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 - ✅ Local data storage
 - ✅ Track last selected model
 - ✅ Interactive mode available
-- ✅ Direct claude launcher (run `cc` to launch claude with current model)
+- ✅ Direct claude launcher (run `cm` to launch claude with current model)
 - ✅ Automatic `--dangerously-skip-permissions` flag for seamless file access
 
 ## Installation
@@ -30,7 +30,7 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 npm install -g @wilson_janet/claude-code-model-switch
 
 # Verify installation
-cc --version
+cm --version
 ```
 
 ## Quick Start
@@ -38,13 +38,13 @@ cc --version
 1. **Add your first model configuration:**
 
    ```bash
-   cc add -n my-config -t YOUR_TOKEN -b https://api.anthropic.com -d "My config"
+   cm add -n my-config -t YOUR_TOKEN -b https://api.anthropic.com -d "My config"
    ```
 
 2. **Run claude with your model:**
 
    ```bash
-   cc
+   cm
    ```
 
 ## Advanced Model Configuration
@@ -52,7 +52,7 @@ cc --version
 You can optionally specify default models for each Claude model tier:
 
 ```bash
-cc add -n production \
+cm add -n production \
   -t sk-ant-xxx \
   -b https://api.anthropic.com \
   -d "Production environment" \
@@ -72,12 +72,12 @@ If not specified, Claude Code will use its official default values.
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `cc` | Launch claude with current model | `cc` |
-| `cc add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
-| `cc use [name]` | Switch model and launch Claude (interactive if no name) | `cc use` or `cc use dev` |
-| `cc current` | Show current model | `cc current` |
-| `cc history` | Show change history | `cc history -l 20` |
-| `cc interactive` | Menu-driven mode | `cc interactive` |
+| `cm` | Launch claude with current model | `cm` |
+| `cm add` | Add new model config | `cm add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `cm use [name]` | Switch model and launch Claude (interactive if no name) | `cm use` or `cm use dev` |
+| `cm current` | Show current model | `cm current` |
+| `cm history` | Show change history | `cm history -l 20` |
+| `cm interactive` | Menu-driven mode | `cm interactive` |
 
 ## Examples
 
@@ -85,13 +85,13 @@ If not specified, Claude Code will use its official default values.
 
 ```bash
 # Add different environments
-cc add -n dev -t sk-dev-xxx -b https://api.anthropic.com -d "Development"
-cc add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "Staging"
-cc add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "Production"
+cm add -n dev -t sk-dev-xxx -b https://api.anthropic.com -d "Development"
+cm add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "Staging"
+cm add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "Production"
 
 # Switch between them
-cc use dev
-cc use production
+cm use dev
+cm use production
 ```
 
 ### Interactive Mode
@@ -99,7 +99,7 @@ cc use production
 For a user-friendly menu interface:
 
 ```bash
-cc interactive
+cm interactive
 ```
 
 Interactive mode now supports configuring default models per tier when adding a new model. Select "Add a new model" and you can optionally set default models for Opus, Sonnet, and Haiku.

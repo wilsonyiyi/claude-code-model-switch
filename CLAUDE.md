@@ -17,7 +17,7 @@ npm start
 # or
 node src/cli.js
 # or
-cc (after global install)
+cm (after global install)
 
 # Run tests
 bash test.sh
@@ -33,7 +33,7 @@ bash demo.sh
 - **Main entry**: `src/cli.js`
 - **Version**: 1.0.1
 - **Node requirement**: >=18.0.0
-- **Binary**: `cc`
+- **Binary**: `cm`
 
 ## Code Architecture
 
@@ -67,14 +67,14 @@ This is a simple 3-layer architecture:
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
-| `list` | List all models | `cc list` |
-| `switch` | Switch model (interactive if no name) | `cc switch` or `cc switch dev` |
-| `current` | Show current model | `cc current` |
-| `remove` | Remove model (with confirmation) | `cc remove dev` |
-| `history` | Show change history | `cc history -l 20` |
-| `interactive` | Menu-driven mode | `cc interactive` |
-| *(no args)* | Launch claude with current model | `cc` |
+| `add` | Add new model config | `cm add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `list` | List all models | `cm list` |
+| `switch` | Switch model (interactive if no name) | `cm switch` or `cm switch dev` |
+| `current` | Show current model | `cm current` |
+| `remove` | Remove model (with confirmation) | `cm remove dev` |
+| `history` | Show change history | `cm history -l 20` |
+| `interactive` | Menu-driven mode | `cm interactive` |
+| *(no args)* | Launch claude with current model | `cm` |
 
 ## Data Model
 
@@ -116,7 +116,7 @@ This is a simple 3-layer architecture:
 ## Key Implementation Details
 
 ### Automatic Claude Launch
-When invoked without arguments (`cc` with no args):
+When invoked without arguments (`cm` with no args):
 1. Checks if models exist and one is selected
 2. Sets environment variables: `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`
 3. Launches `claude --dangerously-skip-permissions` with inherited stdio
@@ -172,22 +172,22 @@ When invoked without arguments (`cc` with no args):
 
 ### Add a new model:
 ```bash
-cc add -n production -t sk-ant-xxx -b https://api.anthropic.com -d "Production config"
+cm add -n production -t sk-ant-xxx -b https://api.anthropic.com -d "Production config"
 ```
 
 ### Switch models interactively:
 ```bash
-cc switch
+cm switch
 ```
 
 ### Launch claude with current model:
 ```bash
-cc
+cm
 ```
 
 ### View change history:
 ```bash
-cc history -l 50
+cm history -l 50
 ```
 
 ### Run all tests:

@@ -168,7 +168,7 @@ bash test.sh
 ## Key Implementation Features
 
 ### Automatic Claude Launch
-When invoked without arguments (`cc` with no args):
+When invoked without arguments (`cm` with no args):
 1. Checks if models exist and one is selected
 2. Sets environment variables: `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`
 3. Launches `claude --dangerously-skip-permissions` with inherited stdio
