@@ -2,7 +2,7 @@
 
 用于管理多个 Claude Code 模型配置并快速切换的命令行工具。
 
-> **English Documentation**: [README.md](./README.md) | **英文文档**: [README.md](./README.md)
+> **英文文档**: [README.md](./README.md) | **English Documentation**: [README.md](./README.md)
 
 ## 功能特性
 
@@ -26,236 +26,72 @@
 
 ### 全局安装（推荐）
 
-全局安装让你可以在任何地方使用 `cc`：
-
 ```bash
 npm install -g @wilson_janet/claude-code-model-switch
-```
 
-安装后，`cc` 命令将在全局可用。
-
-### 本地安装
-
-本地安装将工具安装到当前项目中：
-
-```bash
-npm install @wilson_janet/claude-code-model-switch
-```
-
-然后通过以下方式使用：
-```bash
-npx cc
-# 或
-node src/cli.js
-```
-
-### 验证安装
-
-```bash
+# 验证安装
 cc --version
-
-cc --help
 ```
 
-### 安装后设置
+## 快速开始
 
 1. **添加你的第一个模型配置：**
+
    ```bash
-   cc add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "我的配置"
+   cc add -n my-config -t YOUR_TOKEN -b https://api.anthropic.com -d "我的配置"
    ```
 
 2. **使用你的模型启动 claude：**
+
    ```bash
    cc
    ```
 
-## 使用示例
+## 常用命令
 
-### 快速启动 - 直接运行 claude
-
-```bash
-# 直接运行 cc - 它将使用当前模型配置启动 claude
-cc
-```
-
-当你直接运行 `cc`（不带任何参数）时：
-- ✅ 如果已配置模型且已选择当前模型 → 使用该模型配置启动 `claude`
-- ✅ 自动设置 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL` 环境变量
-- ✅ 自动添加 `--dangerously-skip-permissions` 标志以实现无缝文件访问
-- ✅ 如果没有配置模型或未选择模型会显示有用的错误信息
-
-### 添加新的模型配置
-
-```bash
-# 命令行模式
-cc add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "我的 Claude 配置"
-
-# 交互式模式（提示输入）
-cc interactive
-```
-
-### 列出所有配置
-
-```bash
-cc list
-```
-
-### 切换到指定配置
-
-```bash
-# 切换到特定模型
-cc switch my-config
-
-# 交互式选择（显示列表供选择）
-cc switch
-```
-
-### 显示当前配置
-
-```bash
-cc current
-```
-
-### 删除配置
-
-```bash
-cc remove my-config
-```
-
-### 显示变更历史
-
-```bash
-# 显示最近 20 条记录（默认）
-cc history
-
-# 显示最近 50 条记录
-cc history --limit 50
-```
-
-## 命令参考
-
-| 命令 | 描述 | 选项 |
+| 命令 | 描述 | 示例 |
 |---------|-------------|---------|
-| `add` | 添加新的模型配置 | `-n, --name`, `-t, --token`, `-b, --base-url`, `-d, --description` |
-| `list` | 列出所有配置 | - |
-| `switch` | 切换模型配置 | `[name]`（可选，开启交互模式） |
-| `current` | 显示当前配置 | - |
-| `remove` | 删除配置 | `<name>`（必需） |
-| `history` | 显示配置变更历史 | `-l, --limit <number>` |
-| `interactive` | 交互式模式菜单 | - |
+| `cc` | 使用当前模型启动 claude | `cc` |
+| `cc add` | 添加新的模型配置 | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `cc list` | 列出所有模型 | `cc list` |
+| `cc switch [name]` | 切换模型（无名称时进入交互模式） | `cc switch` 或 `cc switch dev` |
+| `cc current` | 显示当前模型 | `cc current` |
+| `cc history` | 显示变更历史 | `cc history -l 20` |
+| `cc interactive` | 菜单驱动模式 | `cc interactive` |
 
-## 配置文件结构
-
-你的模型配置以 JSON 格式存储：
-
-**config.json:**
-
-```json
-{
-  "models": [
-    {
-      "id": "1640995200000",
-      "name": "my-config",
-      "token": "sk-ant-xxxxx",
-      "baseUrl": "https://api.anthropic.com",
-      "description": "我的 Claude 配置",
-      "createdAt": "2024-01-01T00:00:00.000Z",
-      "lastUsed": "2024-01-01T12:00:00.000Z",
-      "updatedAt": "2024-01-01T12:00:00.000Z"
-    }
-  ],
-  "currentModel": "my-config",
-  "createdAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-**history.json:**
-
-```json
-{
-  "changes": [
-    {
-      "id": 1640995200000,
-      "timestamp": "2024-01-01T12:00:00.000Z",
-      "action": "switch",
-      "modelName": "my-config",
-      "details": "切换到模型: my-config"
-    }
-  ]
-}
-```
-
-## 交互式模式
-
-启动交互式模式获得引导式体验：
-
-```bash
-cc interactive
-```
-
-交互式模式提供：
-
-- 菜单驱动界面
-- 简单的模型切换
-- 安全的删除操作（含确认提示）
-
-## 数据存储位置
-
-配置存储在本地：
-
-- **macOS/Linux**: `~/.config/claude-model-manager/`
-- **Windows**: `%APPDATA%\claude-model-manager\`
-
-## 使用场景
+## 使用示例
 
 ### 管理多个环境
 
 ```bash
-# 开发环境
-cc add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "开发环境"
+# 添加不同环境
+cc add -n dev -t sk-dev-xxx -b https://api.anthropic.com -d "开发环境"
+cc add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "测试环境"
+cc add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "生产环境"
 
-# 测试环境
-cc add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "测试环境"
-
-# 生产环境
-cc add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "生产环境"
-
-# 在环境间轻松切换
+# 在它们之间切换
 cc switch dev
-cc switch staging
 cc switch production
 ```
 
-### 使用不同 API 端点
+### 交互式模式
 
+要使用用户友好的菜单界面：
 ```bash
-# 主要 Anthropic API
-cc add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
-
-# 自定义端点（如果适用）
-cc add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
+cc interactive
 ```
 
 ## 安全说明
 
 - API 令牌以纯文本形式存储在本地配置文件中
-- 确保你的设备设置了适当的文件权限
-- 保持配置目录的安全性
-- 在共享环境中考虑使用环境变量存储敏感令牌
+- 配置存储在本地：
+  - **macOS/Linux**: `~/.config/claude-model-manager/`
+  - **Windows**: `%APPDATA%\claude-model-manager\`
+- 请确保配置目录的安全性
 
-## 故障排除
+## 开发
 
-### 未找到配置文件
-
-工具会在首次运行时自动创建配置目录和文件。
-
-### 权限错误
-
-确保你有写入主目录和配置位置的权限。
-
-### 模型未找到
-
-使用 `cc list` 查看所有可用配置。
+如需贡献代码或了解技术详情，请参阅 [DEVELOPMENT.md](./DEVELOPMENT.md)。
 
 ## 许可证
 
