@@ -26,233 +26,73 @@ A CLI tool to manage multiple Claude Code model configurations with easy switchi
 
 ### Install Globally (Recommended)
 
-Global installation allows you to use `cc` from anywhere:
-
 ```bash
 npm install -g @wilson_janet/claude-code-model-switch
-```
 
-After installation, the `cc` command will be available globally.
-
-### Install Locally
-
-Local installation installs the tool in your current project:
-
-```bash
-npm install @wilson_janet/claude-code-model-switch
-```
-
-Then use it via:
-```bash
-npx cc
-# or
-node src/cli.js
-```
-
-### Verify Installation
-
-```bash
+# Verify installation
 cc --version
-
-cc --help
 ```
 
-### Post-Installation
+## Quick Start
 
 1. **Add your first model configuration:**
+
    ```bash
-   cc add --name my-config --token YOUR_TOKEN --base-url https://api.anthropic.com --description "My config"
+   cc add -n my-config -t YOUR_TOKEN -b https://api.anthropic.com -d "My config"
    ```
 
-2. **Start using claude with your model:**
+2. **Run claude with your model:**
+
    ```bash
    cc
    ```
 
-## Usage Examples
+## Common Commands
 
-### Quick Start - Run claude with current model
-
-```bash
-# Simply run cc directly - it will launch claude with your current model
-cc
-```
-
-When you run `cc` without any arguments:
-- ✅ If you have configured models and a current model is selected → launches `claude` with that model's configuration
-- ✅ Automatically sets `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` environment variables
-- ✅ Automatically adds `--dangerously-skip-permissions` flag for seamless file access
-- ✅ Shows helpful error if no models configured or no model selected
-
-### Add a new model configuration
-
-```bash
-# Command line mode
-cc add --name my-config --token sk-ant-xxxxx --base-url https://api.anthropic.com --description "My Claude config"
-
-# Interactive mode (prompts for inputs)
-cc interactive
-```
-
-### List all configurations
-
-```bash
-cc list
-```
-
-### Switch to a configuration
-
-```bash
-# Switch to specific model
-cc switch my-config
-
-# Interactive selection (shows list to choose from)
-cc switch
-```
-
-### Show current configuration
-
-```bash
-cc current
-```
-
-### Remove a configuration
-
-```bash
-cc remove my-config
-```
-
-### Show change history
-
-```bash
-# Show last 20 changes (default)
-cc history
-
-# Show last 50 changes
-cc history --limit 50
-```
-
-## Commands Reference
-
-| Command | Description | Options |
+| Command | Description | Example |
 |---------|-------------|---------|
-| `add` | Add a new model configuration | `-n, --name`, `-t, --token`, `-b, --base-url`, `-d, --description` |
-| `list` | List all configurations | - |
-| `switch` | Switch to a configuration | `[name]` (optional, enables interactive mode) |
-| `current` | Show current configuration | - |
-| `remove` | Remove a configuration | `<name>` (required) |
-| `history` | Show configuration change history | `-l, --limit <number>` |
-| `interactive` | Interactive mode menu | - |
+| `cc` | Launch claude with current model | `cc` |
+| `cc add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `cc list` | List all models | `cc list` |
+| `cc switch [name]` | Switch model (interactive if no name) | `cc switch` or `cc switch dev` |
+| `cc current` | Show current model | `cc current` |
+| `cc history` | Show change history | `cc history -l 20` |
+| `cc interactive` | Menu-driven mode | `cc interactive` |
 
-## Configuration File Structure
-
-Your model configurations are stored in JSON format:
-
-**config.json:**
-```json
-{
-  "models": [
-    {
-      "id": "1640995200000",
-      "name": "my-config",
-      "token": "sk-ant-xxxxx",
-      "baseUrl": "https://api.anthropic.com",
-      "description": "My Claude config",
-      "createdAt": "2024-01-01T00:00:00.000Z",
-      "lastUsed": "2024-01-01T12:00:00.000Z",
-      "updatedAt": "2024-01-01T12:00:00.000Z"
-    }
-  ],
-  "currentModel": "my-config",
-  "createdAt": "2024-01-01T00:00:00.000Z"
-}
-```
-
-**history.json:**
-```json
-{
-  "changes": [
-    {
-      "id": 1640995200000,
-      "timestamp": "2024-01-01T12:00:00.000Z",
-      "action": "switch",
-      "modelName": "my-config",
-      "details": "Switched to model: my-config"
-    }
-  ]
-}
-```
-
-## Interactive Mode
-
-Launch interactive mode for a guided experience:
-
-```bash
-cc interactive
-```
-
-Interactive mode provides:
-- Menu-driven interface
-- Easy model switching
-- Safe removal with confirmation prompts
-
-## Data Storage Location
-
-Configurations are stored locally in:
-
-- **macOS/Linux**: `~/.config/claude-model-manager/`
-- **Windows**: `%APPDATA%\claude-model-manager\`
-
-## Use Cases
+## Examples
 
 ### Managing Multiple Environments
 
 ```bash
-# Development environment
-cc add --name dev --token sk-dev-xxx --base-url https://api.anthropic.com --description "Development"
+# Add different environments
+cc add -n dev -t sk-dev-xxx -b https://api.anthropic.com -d "Development"
+cc add -n staging -t sk-staging-xxx -b https://api.anthropic.com -d "Staging"
+cc add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "Production"
 
-# Staging environment
-cc add --name staging --token sk-staging-xxx --base-url https://api.anthropic.com --description "Staging"
-
-# Production environment
-cc add --name production --token sk-prod-xxx --base-url https://api.anthropic.com --description "Production"
-
-# Switch between environments easily
+# Switch between them
 cc switch dev
-cc switch staging
 cc switch production
 ```
 
-### Using with Different API Endpoints
+### Interactive Mode
+
+For a user-friendly menu interface:
 
 ```bash
-# Main Anthropic API
-cc add --name claude-pro --token sk-ant-xxx --base-url https://api.anthropic.com
-
-# Custom endpoint (if applicable)
-cc add --name custom --token sk-ant-xxx --base-url https://custom.endpoint.com
+cc interactive
 ```
 
 ## Safety Notes
 
 - API tokens are stored in plain text in your local config file
-- Ensure your device has proper file permissions set
+- Configurations are stored locally at:
+  - **macOS/Linux**: `~/.config/claude-model-manager/`
+  - **Windows**: `%APPDATA%\claude-model-manager\`
 - Keep your config directory secure
-- Consider using environment variables for sensitive tokens in shared environments
 
-## Troubleshooting
+## Development
 
-### Config file not found
-
-The tool will automatically create the config directory and files on first run.
-
-### Permission errors
-
-Ensure you have write permissions to your home directory and config location.
-
-### Model not found
-
-Use `cc list` to see all available configurations.
+For developers who want to contribute or understand the technical details, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ## License
 
