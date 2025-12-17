@@ -4,6 +4,7 @@ const { Command } = require('commander');
 const chalk = require('chalk');
 const ModelManager = require('./modelManager');
 const { spawn } = require('child_process');
+const pkg = require('../package.json');
 
 // Dynamic import for inquirer to avoid ESM/CJS conflict
 (async () => {
@@ -16,7 +17,7 @@ const { spawn } = require('child_process');
   program
     .name('cm')
     .description('Claude Code model configuration manager')
-    .version('1.0.0');
+    .version(pkg.version);
 
   // Check if no arguments provided - if so, try to launch claude
   const args = process.argv.slice(2);
