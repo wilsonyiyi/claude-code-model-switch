@@ -74,6 +74,7 @@ cm add -n production \
 |---------|-------------|---------|
 | `cm` | 使用当前模型启动 claude | `cm` |
 | `cm add` | 添加新的模型配置 | `cm add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `cm update [name]` | 更新模型配置（无名称时进入交互模式） | `cm update dev -n "dev-new" -d "已更新"` |
 | `cm list` | 列出所有模型 | `cm list` |
 | `cm use [name]` | 切换模型并启动 Claude（无名称时进入交互模式） | `cm use` 或 `cm use dev` |
 | `cm current` | 显示当前模型 | `cm current` |
@@ -93,6 +94,9 @@ cm add -n production -t sk-prod-xxx -b https://api.anthropic.com -d "生产环�
 # 在它们之间切换
 cm use dev
 cm use production
+
+# 更新模型
+cm update dev -n staging -d "切换到测试环境"
 ```
 
 ### 交互式模式
@@ -103,6 +107,8 @@ cm interactive
 ```
 
 交互式模式现在支持在添加新模型时配置每个层级的默认模型。选择 "Add a new model"，您可以选择为 Opus、Sonnet 和 Haiku 设置默认模型。
+
+除了添加，交互式模式还支持更新模型配置（Update a model），可以修改模型名称、描述、token、基准URL以及各模型层级的默认配置。
 
 
 ## 安全说明

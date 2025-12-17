@@ -68,6 +68,7 @@ This is a simple 3-layer architecture:
 | Command | Description | Example |
 |---------|-------------|---------|
 | `add` | Add new model config | `cm add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
+| `update` | Update model config | `cm update dev -n "dev-new" -d "Updated"` |
 | `list` | List all models | `cm list` |
 | `switch` | Switch model (interactive if no name) | `cm switch` or `cm switch dev` |
 | `current` | Show current model | `cm current` |

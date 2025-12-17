@@ -323,6 +323,189 @@ const pkg = require('../package.json');
       }
     });
 
+  // Update command
+  program
+    .command('update')
+    .description('Update a model configuration')
+    .argument('[name]', 'Model name to update (interactive if not specified)')
+    .option('-n, --new-name <name>', 'New name for the model')
+    .option('-t, --token <token>', 'New API token')
+    .option('-b, --base-url <url>', 'New base URL')
+    .option('-d, --description <description>', 'New description')
+    .option('--opus-model <model>', 'Default Opus model')
+    .option('--sonnet-model <model>', 'Default Sonnet model')
+    .option('--haiku-model <model>', 'Default Haiku model')
+    .action(async (name, options) => {
+      try {
+        let modelName = name;
+
+        // Interactive mode if no name provided
+        if (!modelName) {
+          const models = await modelManager.listModels();
+
+          if (models.length === 0) {
+            console.log(chalk.yellow('No models configured. Use "cm add" to add one.'));
+            return;
+          }
+
+          const choices = models.map(m => ({
+            name: `${m.name}${m.description ? ` - ${m.description}` : ''}`,
+            value: m.name
+          }));
+
+          const answer = await inquirer.prompt([
+            {
+              type: 'list',
+              name: 'model',
+              message: 'Select a model to update:',
+              choices
+            }
+          ]);
+
+          modelName = answer.model;
+        }
+
+        const model = await modelManager.getModel(modelName);
+
+        if (!model) {
+          console.error(chalk.red(`Model "${modelName}" not found.`));
+          process.exit(1);
+        }
+
+        // Check if any update options were provided
+        const hasUpdates = options.newName || options.token || options.baseUrl ||
+                          options.description || options.opusModel ||
+                          options.sonnetModel || options.haikuModel;
+
+        if (!hasUpdates) {
+          // Interactive updates
+          console.log(chalk.blue('\nCurrent model configuration:'));
+          console.log(chalk.gray(`  Name: ${model.name}`));
+          console.log(chalk.gray(`  Description: ${model.description || 'N/A'}`));
+          console.log(chalk.gray(`  Base URL: ${model.baseUrl}`));
+          console.log(chalk.gray(`  Token: ${model.token.slice(0, 10)}...${model.token.slice(-5)}`));
+          if (model.defaultOpusModel || model.defaultSonnetModel || model.defaultHaikuModel) {
+            console.log(chalk.gray('  Model configurations:'));
+            if (model.defaultOpusModel) console.log(chalk.gray(`    Opus: ${model.defaultOpusModel}`));
+            if (model.defaultSonnetModel) console.log(chalk.gray(`    Sonnet: ${model.defaultSonnetModel}`));
+            if (model.defaultHaikuModel) console.log(chalk.gray(`    Haiku: ${model.defaultHaikuModel}`));
+          }
+          console.log('');
+
+          const updates = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'name',
+              message: 'New name (leave blank to keep current):',
+              default: model.name
+            },
+            {
+              type: 'password',
+              name: 'token',
+              message: 'New token (leave blank to keep current):',
+              default: model.token
+            },
+            {
+              type: 'input',
+              name: 'baseUrl',
+              message: 'New base URL (leave blank to keep current):',
+              default: model.baseUrl
+            },
+            {
+              type: 'input',
+              name: 'description',
+              message: 'New description (leave blank to keep current):',
+              default: model.description
+            },
+            {
+              type: 'confirm',
+              name: 'configureModels',
+              message: 'Configure default models for Opus, Sonnet, and Haiku?',
+              default: false
+            }
+          ]);
+
+          if (updates.configureModels) {
+            const modelAnswers = await inquirer.prompt([
+              {
+                type: 'input',
+                name: 'defaultOpusModel',
+                message: 'Default Opus model (leave blank to keep current/remove):',
+                default: model.defaultOpusModel || ''
+              },
+              {
+                type: 'input',
+                name: 'defaultSonnetModel',
+                message: 'Default Sonnet model (leave blank to keep current/remove):',
+                default: model.defaultSonnetModel || ''
+              },
+              {
+                type: 'input',
+                name: 'defaultHaikuModel',
+                message: 'Default Haiku model (leave blank to keep current/remove):',
+                default: model.defaultHaikuModel || ''
+              }
+            ]);
+            Object.assign(updates, modelAnswers);
+          }
+
+          // Filter out empty values and unchanged values
+          const filteredUpdates = {};
+          if (updates.name && updates.name !== model.name) filteredUpdates.name = updates.name;
+          if (updates.token && updates.token !== model.token) filteredUpdates.token = updates.token;
+          if (updates.baseUrl && updates.baseUrl !== model.baseUrl) filteredUpdates.baseUrl = updates.baseUrl;
+          if (updates.description !== undefined && updates.description !== model.description) {
+            filteredUpdates.description = updates.description;
+          }
+          if (updates.configureModels) {
+            if (updates.defaultOpusModel !== undefined) {
+              filteredUpdates.defaultOpusModel = updates.defaultOpusModel || null;
+            }
+            if (updates.defaultSonnetModel !== undefined) {
+              filteredUpdates.defaultSonnetModel = updates.defaultSonnetModel || null;
+            }
+            if (updates.defaultHaikuModel !== undefined) {
+              filteredUpdates.defaultHaikuModel = updates.defaultHaikuModel || null;
+            }
+          }
+
+          if (Object.keys(filteredUpdates).length === 0) {
+            console.log(chalk.yellow('No changes made.'));
+            return;
+          }
+
+          await modelManager.updateModel(modelName, filteredUpdates);
+          console.log(chalk.green('✓ Model updated successfully!'));
+
+          // Show what was changed
+          console.log(chalk.gray('\nChanges made:'));
+          Object.entries(filteredUpdates).forEach(([key, value]) => {
+            console.log(chalk.gray(`  ${key}: ${value}`));
+          });
+          console.log('');
+
+        } else {
+          // Command-line updates
+          const updates = {};
+          if (options.newName) updates.name = options.newName;
+          if (options.token) updates.token = options.token;
+          if (options.baseUrl) updates.baseUrl = options.baseUrl;
+          if (options.description !== undefined) updates.description = options.description;
+          if (options.opusModel) updates.defaultOpusModel = options.opusModel;
+          if (options.sonnetModel) updates.defaultSonnetModel = options.sonnetModel;
+          if (options.haikuModel) updates.defaultHaikuModel = options.haikuModel;
+
+          await modelManager.updateModel(modelName, updates);
+          console.log(chalk.green('✓ Model updated successfully!'));
+          console.log(chalk.gray(`  Name: ${options.newName || modelName}`));
+        }
+
+      } catch (error) {
+        console.error(chalk.red(`Error: ${error.message}`));
+        process.exit(1);
+      }
+    });
+
   // Interactive mode
   program
     .command('interactive')
@@ -336,6 +519,7 @@ const pkg = require('../package.json');
           message: 'What would you like to do?',
           choices: [
             { name: 'Add a new model', value: 'add' },
+            { name: 'Update a model', value: 'update' },
             { name: 'List all models', value: 'list' },
             { name: 'Use a model (switch + launch)', value: 'use' },
             { name: 'Show current model', value: 'current' },
@@ -551,12 +735,140 @@ const pkg = require('../package.json');
         break;
       }
 
+      case 'update': {
+        if (models.length === 0) {
+          console.log(chalk.yellow('\\nNo models to update. Add one first!'));
+          break;
+        }
+
+        const selectAnswer = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'model',
+            message: 'Select a model to update:',
+            choices: models.map(m => m.name)
+          }
+        ]);
+
+        const selectedModel = await modelManager.getModel(selectAnswer.model);
+
+        console.log(chalk.blue('\\nCurrent model configuration:'));
+        console.log(chalk.gray(`  Name: ${selectedModel.name}`));
+        console.log(chalk.gray(`  Description: ${selectedModel.description || 'N/A'}`));
+        console.log(chalk.gray(`  Base URL: ${selectedModel.baseUrl}`));
+        console.log(chalk.gray(`  Token: ${selectedModel.token.slice(0, 10)}...${selectedModel.token.slice(-5)}`));
+        if (selectedModel.defaultOpusModel || selectedModel.defaultSonnetModel || selectedModel.defaultHaikuModel) {
+          console.log(chalk.gray('  Model configurations:'));
+          if (selectedModel.defaultOpusModel) console.log(chalk.gray(`    Opus: ${selectedModel.defaultOpusModel}`));
+          if (selectedModel.defaultSonnetModel) console.log(chalk.gray(`    Sonnet: ${selectedModel.defaultSonnetModel}`));
+          if (selectedModel.defaultHaikuModel) console.log(chalk.gray(`    Haiku: ${selectedModel.defaultHaikuModel}`));
+        }
+        console.log('');
+
+        const updates = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'name',
+            message: 'New name (leave blank to keep current):',
+            default: selectedModel.name
+          },
+          {
+            type: 'password',
+            name: 'token',
+            message: 'New token (leave blank to keep current):',
+            default: selectedModel.token
+          },
+          {
+            type: 'input',
+            name: 'baseUrl',
+            message: 'New base URL (leave blank to keep current):',
+            default: selectedModel.baseUrl
+          },
+          {
+            type: 'input',
+            name: 'description',
+            message: 'New description (leave blank to keep current):',
+            default: selectedModel.description
+          },
+          {
+            type: 'confirm',
+            name: 'configureModels',
+            message: 'Configure default models for Opus, Sonnet, and Haiku?',
+            default: false
+          }
+        ]);
+
+        if (updates.configureModels) {
+          const modelAnswers = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'defaultOpusModel',
+              message: 'Default Opus model (leave blank to keep current/remove):',
+              default: selectedModel.defaultOpusModel || ''
+            },
+            {
+              type: 'input',
+              name: 'defaultSonnetModel',
+              message: 'Default Sonnet model (leave blank to keep current/remove):',
+              default: selectedModel.defaultSonnetModel || ''
+            },
+            {
+              type: 'input',
+              name: 'defaultHaikuModel',
+              message: 'Default Haiku model (leave blank to keep current/remove):',
+              default: selectedModel.defaultHaikuModel || ''
+            }
+          ]);
+          Object.assign(updates, modelAnswers);
+        }
+
+        // Filter out empty values and unchanged values
+        const filteredUpdates = {};
+        if (updates.name && updates.name !== selectedModel.name) filteredUpdates.name = updates.name;
+        if (updates.token && updates.token !== selectedModel.token) filteredUpdates.token = updates.token;
+        if (updates.baseUrl && updates.baseUrl !== selectedModel.baseUrl) filteredUpdates.baseUrl = updates.baseUrl;
+        if (updates.description !== undefined && updates.description !== selectedModel.description) {
+          filteredUpdates.description = updates.description;
+        }
+        if (updates.configureModels) {
+          if (updates.defaultOpusModel !== undefined) {
+            filteredUpdates.defaultOpusModel = updates.defaultOpusModel || null;
+          }
+          if (updates.defaultSonnetModel !== undefined) {
+            filteredUpdates.defaultSonnetModel = updates.defaultSonnetModel || null;
+          }
+          if (updates.defaultHaikuModel !== undefined) {
+            filteredUpdates.defaultHaikuModel = updates.defaultHaikuModel || null;
+          }
+        }
+
+        if (Object.keys(filteredUpdates).length === 0) {
+          console.log(chalk.yellow('\\nNo changes made.'));
+          break;
+        }
+
+        try {
+          await modelManager.updateModel(selectAnswer.model, filteredUpdates);
+          console.log(chalk.green('\\n✓ Model updated successfully!'));
+
+          // Show what was changed
+          console.log(chalk.gray('\\nChanges made:'));
+          Object.entries(filteredUpdates).forEach(([key, value]) => {
+            console.log(chalk.gray(`  ${key}: ${value}`));
+          });
+          console.log('');
+        } catch (error) {
+          console.error(chalk.red(`\\nError: ${error.message}`));
+        }
+        break;
+      }
+
       case 'history': {
         const configManager = require('./configManager');
         const manager = new configManager();
         const history = await manager.getHistory();
 
-        console.log(chalk.blue('\nChange History:'));
+        console.log(chalk.blue('\\nChange History:'));
         history.changes.slice(0, 20).forEach(change => {
           const timestamp = new Date(change.timestamp).toLocaleString();
           const action = change.action.toUpperCase();
