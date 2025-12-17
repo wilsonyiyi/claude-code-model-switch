@@ -33,6 +33,27 @@ npm install -g @wilson_janet/claude-code-model-switch
 cc --version
 ```
 
+## 高级模型配置
+
+您可以选择为每个 Claude 模型层级指定默认模型：
+
+```bash
+cc add -n production \
+  -t sk-ant-xxx \
+  -b https://api.anthropic.com \
+  -d "生产环境" \
+  --opus-model claude-opus-4-5-20251101 \
+  --sonnet-model claude-sonnet-4-5-20250929 \
+  --haiku-model claude-haiku-4-5-20251001
+```
+
+这些可选的模型配置将作为环境变量传递给 Claude Code：
+- `ANTHROPIC_DEFAULT_OPUS_MODEL`
+- `ANTHROPIC_DEFAULT_SONNET_MODEL`
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL`
+
+如果未指定，Claude Code 将使用其官方默认值。
+
 ## 快速开始
 
 1. **添加你的第一个模型配置：**
@@ -80,6 +101,9 @@ cc switch production
 ```bash
 cc interactive
 ```
+
+交互式模式现在支持在添加新模型时配置每个层级的默认模型。选择 "Add a new model"，您可以选择为 Opus、Sonnet 和 Haiku 设置默认模型。
+
 
 ## 安全说明
 

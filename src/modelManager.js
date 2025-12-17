@@ -6,7 +6,7 @@ class ModelManager {
     this.configManager = new ConfigManager();
   }
 
-  async addModel(name, token, baseUrl, description) {
+  async addModel(name, token, baseUrl, description, modelConfig = {}) {
     if (!name || !token || !baseUrl) {
       throw new Error('Name, token, and baseUrl are required');
     }
@@ -17,6 +17,8 @@ class ModelManager {
       throw new Error(`Model "${name}" already exists`);
     }
 
+    const defaultModelConfig = await this.configManager.getDefaultModelConfig();
+
     const model = {
       id: Date.now().toString(),
       name,
@@ -24,7 +26,11 @@ class ModelManager {
       baseUrl,
       description: description || '',
       createdAt: new Date().toISOString(),
-      lastUsed: null
+      lastUsed: null,
+      // Optional model configuration variables
+      defaultOpusModel: modelConfig.defaultOpusModel || defaultModelConfig.ANTHROPIC_DEFAULT_OPUS_MODEL,
+      defaultSonnetModel: modelConfig.defaultSonnetModel || defaultModelConfig.ANTHROPIC_DEFAULT_SONNET_MODEL,
+      defaultHaikuModel: modelConfig.defaultHaikuModel || defaultModelConfig.ANTHROPIC_DEFAULT_HAIKU_MODEL
     };
 
     config.models.push(model);
@@ -124,7 +130,21 @@ class ModelManager {
       ? chalk.blue(`\n    Last used: ${new Date(model.lastUsed).toLocaleString()}`)
       : '';
 
-    return `${prefix}${name}${desc}${lastUsed}`;
+    let modelConfigs = '';
+    if (model.defaultOpusModel || model.defaultSonnetModel || model.defaultHaikuModel) {
+      modelConfigs = chalk.gray('\n    Model configs:');
+      if (model.defaultOpusModel) {
+        modelConfigs += chalk.gray(`\n      Opus: ${model.defaultOpusModel}`);
+      }
+      if (model.defaultSonnetModel) {
+        modelConfigs += chalk.gray(`\n      Sonnet: ${model.defaultSonnetModel}`);
+      }
+      if (model.defaultHaikuModel) {
+        modelConfigs += chalk.gray(`\n      Haiku: ${model.defaultHaikuModel}`);
+      }
+    }
+
+    return `${prefix}${name}${desc}${modelConfigs}${lastUsed}`;
   }
 }
 

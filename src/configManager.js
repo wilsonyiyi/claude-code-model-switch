@@ -3,6 +3,12 @@ const path = require('path');
 const fs = require('fs-extra');
 
 class ConfigManager {
+  static CLAUDE_DEFAULT_MODELS = {
+    ANTHROPIC_DEFAULT_OPUS_MODEL: 'claude-opus-4-5-20251101',
+    ANTHROPIC_DEFAULT_SONNET_MODEL: 'claude-sonnet-4-5-20250929',
+    ANTHROPIC_DEFAULT_HAIKU_MODEL: 'claude-haiku-4-5-20251001'
+  };
+
   constructor() {
     this.configDir = this.getConfigDir();
     this.configFile = path.join(this.configDir, 'config.json');
@@ -73,6 +79,23 @@ class ConfigManager {
     } catch (error) {
       throw new Error(`Failed to save history: ${error.message}`);
     }
+  }
+
+  async getDefaultModelConfig() {
+    const envConfig = {};
+
+    // Check environment variables for model overrides
+    if (process.env.ANTHROPIC_DEFAULT_OPUS_MODEL) {
+      envConfig.ANTHROPIC_DEFAULT_OPUS_MODEL = process.env.ANTHROPIC_DEFAULT_OPUS_MODEL;
+    }
+    if (process.env.ANTHROPIC_DEFAULT_SONNET_MODEL) {
+      envConfig.ANTHROPIC_DEFAULT_SONNET_MODEL = process.env.ANTHROPIC_DEFAULT_SONNET_MODEL;
+    }
+    if (process.env.ANTHROPIC_DEFAULT_HAIKU_MODEL) {
+      envConfig.ANTHROPIC_DEFAULT_HAIKU_MODEL = process.env.ANTHROPIC_DEFAULT_HAIKU_MODEL;
+    }
+
+    return envConfig;
   }
 
   async addChange(action, modelName, details) {

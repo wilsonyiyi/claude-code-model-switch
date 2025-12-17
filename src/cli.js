@@ -38,7 +38,22 @@ const { spawn } = require('child_process');
       }
 
       console.log(chalk.blue(`\n🚀 Launching claude with model: ${chalk.bold(currentModel.name)}`));
-      console.log(chalk.gray(`   Description: ${currentModel.description || 'N/A'}\n`));
+      console.log(chalk.gray(`   Description: ${currentModel.description || 'N/A'}`));
+
+      // Log model configurations if they exist
+      if (currentModel.defaultOpusModel || currentModel.defaultSonnetModel || currentModel.defaultHaikuModel) {
+        console.log(chalk.gray('   Model configurations:'));
+        if (currentModel.defaultOpusModel) {
+          console.log(chalk.gray(`   - Opus: ${currentModel.defaultOpusModel}`));
+        }
+        if (currentModel.defaultSonnetModel) {
+          console.log(chalk.gray(`   - Sonnet: ${currentModel.defaultSonnetModel}`));
+        }
+        if (currentModel.defaultHaikuModel) {
+          console.log(chalk.gray(`   - Haiku: ${currentModel.defaultHaikuModel}`));
+        }
+      }
+      console.log('');
 
       // Execute claude with current model environment variables
       // Add --dangerously-skip-permissions by default to bypass file permission checks
@@ -48,7 +63,10 @@ const { spawn } = require('child_process');
         env: {
           ...process.env,
           ANTHROPIC_AUTH_TOKEN: currentModel.token,
-          ANTHROPIC_BASE_URL: currentModel.baseUrl
+          ANTHROPIC_BASE_URL: currentModel.baseUrl,
+          ...(currentModel.defaultOpusModel && { ANTHROPIC_DEFAULT_OPUS_MODEL: currentModel.defaultOpusModel }),
+          ...(currentModel.defaultSonnetModel && { ANTHROPIC_DEFAULT_SONNET_MODEL: currentModel.defaultSonnetModel }),
+          ...(currentModel.defaultHaikuModel && { ANTHROPIC_DEFAULT_HAIKU_MODEL: currentModel.defaultHaikuModel })
         }
       });
 
@@ -82,9 +100,17 @@ const { spawn } = require('child_process');
     .requiredOption('-t, --token <token>', 'Anthropic API token')
     .requiredOption('-b, --base-url <url>', 'Anthropic base URL')
     .option('-d, --description <description>', 'Model description')
+    .option('--opus-model <model>', 'Default Opus model (optional)')
+    .option('--sonnet-model <model>', 'Default Sonnet model (optional)')
+    .option('--haiku-model <model>', 'Default Haiku model (optional)')
     .action(async (options) => {
       try {
-        await modelManager.addModel(options.name, options.token, options.baseUrl, options.description);
+        const modelConfig = {};
+        if (options.opusModel) modelConfig.defaultOpusModel = options.opusModel;
+        if (options.sonnetModel) modelConfig.defaultSonnetModel = options.sonnetModel;
+        if (options.haikuModel) modelConfig.defaultHaikuModel = options.haikuModel;
+
+        await modelManager.addModel(options.name, options.token, options.baseUrl, options.description, modelConfig);
         console.log(chalk.green('✓ Model added successfully!'));
         console.log(chalk.gray(`  Name: ${options.name}`));
       } catch (error) {
@@ -287,12 +313,56 @@ const { spawn } = require('child_process');
           { type: 'input', name: 'name', message: 'Model name:' },
           { type: 'password', name: 'token', message: 'API Token:' },
           { type: 'input', name: 'baseUrl', message: 'Base URL:', default: 'https://api.anthropic.com' },
-          { type: 'input', name: 'description', message: 'Description (optional):' }
+          { type: 'input', name: 'description', message: 'Description (optional):' },
+          {
+            type: 'confirm',
+            name: 'configureModels',
+            message: 'Configure default models for Opus, Sonnet, and Haiku?',
+            default: false
+          }
         ]);
 
+        if (answers.configureModels) {
+          const modelAnswers = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'defaultOpusModel',
+              message: 'Default Opus model (e.g., claude-opus-4-5-20251101):',
+              default: 'claude-opus-4-5-20251101',
+              when: () => answers.configureModels
+            },
+            {
+              type: 'input',
+              name: 'defaultSonnetModel',
+              message: 'Default Sonnet model (e.g., claude-sonnet-4-5-20250929):',
+              default: 'claude-sonnet-4-5-20250929',
+              when: () => answers.configureModels
+            },
+            {
+              type: 'input',
+              name: 'defaultHaikuModel',
+              message: 'Default Haiku model (e.g., claude-haiku-4-5-20251001):',
+              default: 'claude-haiku-4-5-20251001',
+              when: () => answers.configureModels
+            }
+          ]);
+          Object.assign(answers, modelAnswers);
+        }
+
         try {
-          await modelManager.addModel(answers.name, answers.token, answers.baseUrl, answers.description);
+          const modelConfig = {};
+          if (answers.defaultOpusModel) modelConfig.defaultOpusModel = answers.defaultOpusModel;
+          if (answers.defaultSonnetModel) modelConfig.defaultSonnetModel = answers.defaultSonnetModel;
+          if (answers.defaultHaikuModel) modelConfig.defaultHaikuModel = answers.defaultHaikuModel;
+
+          await modelManager.addModel(answers.name, answers.token, answers.baseUrl, answers.description, modelConfig);
           console.log(chalk.green('\n✓ Model added successfully!'));
+          if (answers.configureModels) {
+            console.log(chalk.gray('\nModel configurations set:'));
+            if (answers.defaultOpusModel) console.log(chalk.gray(`  Opus: ${answers.defaultOpusModel}`));
+            if (answers.defaultSonnetModel) console.log(chalk.gray(`  Sonnet: ${answers.defaultSonnetModel}`));
+            if (answers.defaultHaikuModel) console.log(chalk.gray(`  Haiku: ${answers.defaultHaikuModel}`));
+          }
         } catch (error) {
           console.error(chalk.red(`\nError: ${error.message}`));
         }
@@ -340,6 +410,12 @@ const { spawn } = require('child_process');
           console.log(chalk.bold(`  ${model.name}`));
           if (model.description) {
             console.log(`  ${model.description}`);
+          }
+          if (model.defaultOpusModel || model.defaultSonnetModel || model.defaultHaikuModel) {
+            console.log(chalk.gray('\n  Model configurations:'));
+            if (model.defaultOpusModel) console.log(chalk.gray(`    Opus: ${model.defaultOpusModel}`));
+            if (model.defaultSonnetModel) console.log(chalk.gray(`    Sonnet: ${model.defaultSonnetModel}`));
+            if (model.defaultHaikuModel) console.log(chalk.gray(`    Haiku: ${model.defaultHaikuModel}`));
           }
         } else {
           console.log(chalk.yellow('\nNo model is currently selected.'));

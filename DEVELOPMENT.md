@@ -44,7 +44,11 @@ The project follows a clean 3-layer architecture:
       "description": "optional",
       "createdAt": "ISO-date",
       "lastUsed": "ISO-date | null",
-      "updatedAt": "ISO-date"
+      "updatedAt": "ISO-date",
+      // Optional model configuration variables
+      "defaultOpusModel": "claude-opus-4-5-20251101",
+      "defaultSonnetModel": "claude-sonnet-4-5-20250929",
+      "defaultHaikuModel": "claude-haiku-4-5-20251001"
     }
   ],
   "currentModel": "config-name | null",
@@ -120,7 +124,25 @@ Config directory locations:
 
 Platform detection via Node.js `os.platform()`.
 
-## Testing
+## Model Configuration
+
+The application now supports optional model configuration for each Claude model tier. When launching Claude, the following environment variables can be set per configuration:
+- `ANTHROPIC_DEFAULT_OPUS_MODEL`
+- `ANTHROPIC_DEFAULT_SONNET_MODEL`
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL`
+
+These are stored in the model configuration and passed as environment variables when launching Claude. If not set, Claude Code uses its official defaults.
+
+**Default model values:**
+```javascript
+CLAUDE_DEFAULT_MODELS = {
+  ANTHROPIC_DEFAULT_OPUS_MODEL: 'claude-opus-4-5-20251101',
+  ANTHROPIC_DEFAULT_SONNET_MODEL: 'claude-sonnet-4-5-20250929',
+  ANTHROPIC_DEFAULT_HAIKU_MODEL: 'claude-haiku-4-5-20251001'
+};
+```
+
+### Testing
 
 ### test.sh
 Automated test script covering:
@@ -157,6 +179,10 @@ When invoked without arguments (`cc` with no args):
 - Switch command: interactive if no model name provided
 - Remove command: includes confirmation prompt
 - Full interactive mode: menu-driven experience via `interactive` command
+- **NEW**: Interactive mode now supports configuring default models when adding a new model
+  - Optional model configuration wizard after basic model details
+  - Allows setting `defaultOpusModel`, `defaultSonnetModel`, and `defaultHaikuModel`
+  - Displays configured models when viewing current model or listing all models
 
 ## Dependencies
 

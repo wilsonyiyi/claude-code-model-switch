@@ -47,13 +47,33 @@ cc --version
    cc
    ```
 
+## Advanced Model Configuration
+
+You can optionally specify default models for each Claude model tier:
+
+```bash
+cc add -n production \
+  -t sk-ant-xxx \
+  -b https://api.anthropic.com \
+  -d "Production environment" \
+  --opus-model claude-opus-4-5-20251101 \
+  --sonnet-model claude-sonnet-4-5-20250929 \
+  --haiku-model claude-haiku-4-5-20251001
+```
+
+These optional model configurations will be passed to Claude Code as environment variables:
+- `ANTHROPIC_DEFAULT_OPUS_MODEL`
+- `ANTHROPIC_DEFAULT_SONNET_MODEL`
+- `ANTHROPIC_DEFAULT_HAIKU_MODEL`
+
+If not specified, Claude Code will use its official default values.
+
 ## Common Commands
 
 | Command | Description | Example |
 |---------|-------------|---------|
 | `cc` | Launch claude with current model | `cc` |
 | `cc add` | Add new model config | `cc add -n dev -t sk-ant-xxx -b https://api.anthropic.com` |
-| `cc list` | List all models | `cc list` |
 | `cc switch [name]` | Switch model (interactive if no name) | `cc switch` or `cc switch dev` |
 | `cc current` | Show current model | `cc current` |
 | `cc history` | Show change history | `cc history -l 20` |
@@ -81,6 +101,8 @@ For a user-friendly menu interface:
 ```bash
 cc interactive
 ```
+
+Interactive mode now supports configuring default models per tier when adding a new model. Select "Add a new model" and you can optionally set default models for Opus, Sonnet, and Haiku.
 
 ## Safety Notes
 
