@@ -107,16 +107,14 @@ class ModelManager {
     const oldName = model.name;
     Object.assign(model, updates, { updatedAt: new Date().toISOString() });
 
-    await this.configManager.saveConfig(config);
-
+    // Handle name change - update currentModel if needed
     if (updates.name && oldName !== updates.name) {
-      const config2 = await this.configManager.getConfig();
-      if (config2.currentModel === oldName) {
-        config2.currentModel = updates.name;
-        await this.configManager.saveConfig(config2);
+      if (config.currentModel === oldName) {
+        config.currentModel = updates.name;
       }
     }
 
+    await this.configManager.saveConfig(config);
     await this.configManager.addChange('update', name, `Updated model: ${oldName}`);
 
     return model;
