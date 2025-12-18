@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Attention
 
-- Do not modify the config.json file under claude-model-manager directory in the root directory.
+- **minimal changes** to the code.
+- Do not add any new **Markdown files**.
 
 ## Quick Start
 
