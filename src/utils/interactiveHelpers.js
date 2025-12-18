@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const { PROVIDERS } = require('../providers');
 
 /**
  * Prompts user to select a model from the list
@@ -205,10 +206,85 @@ function filterUpdates(updates, currentModel) {
   return filteredUpdates;
 }
 
+/**
+ * Prompts for model selection from provider presets
+ * @param {Object} inquirer - Inquirer instance
+ * @returns {Promise<Object>} - Model configuration answers
+ */
+async function promptModelFromProvider(inquirer) {
+  const { provider } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'provider',
+      message: 'Select a model provider:',
+      choices: Object.entries(PROVIDERS).map(([key, p]) => ({
+        name: `${p.name} - ${p.description}`,
+        value: key
+      }))
+    }
+  ]);
+
+  const selectedProvider = PROVIDERS[provider];
+
+  // Basic information
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'Name for this configuration:'
+    },
+    {
+      type: 'password',
+      name: 'token',
+      message: 'API Key / Token:'
+    }
+  ]);
+
+  // Custom provider needs additional info
+  if (provider === 'custom') {
+    const customAnswers = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'baseUrl',
+        message: 'Base URL:'
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: 'Description (optional):'
+      }
+    ]);
+    Object.assign(answers, customAnswers);
+    answers.modelConfig = {};
+  } else {
+    answers.baseUrl = selectedProvider.baseUrl;
+    answers.description = `${selectedProvider.name} configuration`;
+
+    // Confirm using preset model configurations
+    const { useModels } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'useModels',
+        message: `Use default ${selectedProvider.name} model configurations?`,
+        default: true
+      }
+    ]);
+
+    if (useModels) {
+      answers.modelConfig = selectedProvider.modelConfig;
+    } else {
+      answers.modelConfig = {};
+    }
+  }
+
+  return answers;
+}
+
 module.exports = {
   selectModel,
   confirmAction,
   promptNewModelDetails,
   promptModelUpdates,
-  filterUpdates
+  filterUpdates,
+  promptModelFromProvider
 };

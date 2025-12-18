@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { selectModel, confirmAction, promptNewModelDetails, promptModelUpdates, filterUpdates } = require('../utils/interactiveHelpers');
+const { selectModel, confirmAction, promptNewModelDetails, promptModelUpdates, filterUpdates, promptModelFromProvider } = require('../utils/interactiveHelpers');
 const { launchClaude } = require('../utils/claudeLauncher');
 const ConfigManager = require('../configManager');
 
@@ -10,7 +10,8 @@ async function interactiveCommand(modelManager, inquirer) {
       name: 'action',
       message: 'What would you like to do?',
       choices: [
-        { name: 'Add a new model', value: 'add' },
+        { name: 'Add from provider (recommended)', value: 'provider' },
+        { name: 'Add a new model (manual)', value: 'add' },
         { name: 'Update a model', value: 'update' },
         { name: 'List all models', value: 'list' },
         { name: 'Use a model (switch + launch)', value: 'use' },
@@ -34,6 +35,44 @@ async function handleInteractiveAction(action, modelManager, inquirer) {
   const models = await modelManager.listModels();
 
   switch (action) {
+    case 'provider': {
+      try {
+        const answers = await promptModelFromProvider(inquirer);
+
+        await modelManager.addModel(
+          answers.name,
+          answers.token,
+          answers.baseUrl,
+          answers.description,
+          answers.modelConfig
+        );
+
+        console.log(chalk.green('\n✓ Model added successfully!'));
+        console.log(chalk.gray(`  Name: ${answers.name}`));
+        console.log(chalk.gray(`  Provider: ${answers.description}`));
+        console.log(chalk.gray(`  Base URL: ${answers.baseUrl}`));
+
+        // Ask if user wants to use it
+        const { shouldUse } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'shouldUse',
+            message: 'Switch to this model and launch Claude?',
+            default: false
+          }
+        ]);
+
+        if (shouldUse) {
+          const selectedModel = await modelManager.switchModel(answers.name);
+          console.log(chalk.green(`\n✓ Switched to model: ${answers.name}`));
+          await launchClaude(selectedModel, []);
+        }
+      } catch (error) {
+        console.error(chalk.red(`\nError: ${error.message}`));
+      }
+      break;
+    }
+
     case 'add': {
       const answers = await promptNewModelDetails();
 

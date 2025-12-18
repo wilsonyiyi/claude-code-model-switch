@@ -13,6 +13,7 @@ const historyCommand = require('./commands/history');
 const removeCommand = require('./commands/remove');
 const updateCommand = require('./commands/update');
 const useCommand = require('./commands/use');
+const providerCommand = require('./commands/provider');
 const { interactiveCommand } = require('./commands/interactive');
 const { autoLaunchClaude } = require('./commands/launch');
 
@@ -42,10 +43,17 @@ const { autoLaunchClaude } = require('./commands/launch');
     }
   }
 
+  // Provider command (add via preset providers)
+  program
+    .command('provider')
+    .alias('p')
+    .description('Add model via provider presets (interactive)')
+    .action(() => providerCommand(modelManager, inquirer, process.argv));
+
   // Add command
   program
     .command('add')
-    .description('Add a new model configuration')
+    .description('Add a new model configuration (manual)')
     .requiredOption('-n, --name <name>', 'Model name')
     .requiredOption('-t, --token <token>', 'Anthropic API token')
     .requiredOption('-b, --base-url <url>', 'Anthropic base URL')
