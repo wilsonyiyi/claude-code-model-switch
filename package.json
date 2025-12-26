@@ -1,6 +1,6 @@
 {
   "name": "@wilson_janet/claude-code-model-switch",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A CLI tool to manage Claude Code model switching with multiple configurations",
   "main": "src/index.js",
   "bin": {
