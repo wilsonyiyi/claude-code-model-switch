@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 
-async function listCommand(modelManager) {
+async function listCommand(modelManager, options = {}) {
   try {
     const models = await modelManager.listModels();
     const currentModel = await modelManager.getCurrentModel();
@@ -12,7 +12,12 @@ async function listCommand(modelManager) {
 
     console.log(chalk.blue('\nConfigured Models:'));
     models.forEach(model => {
-      console.log(modelManager.formatModel(model, currentModel && currentModel.name === model.name));
+      const isCurrent = currentModel && currentModel.name === model.name;
+      if (options.full) {
+        console.log(modelManager.formatModelFull(model, isCurrent));
+      } else {
+        console.log(modelManager.formatModel(model, isCurrent));
+      }
     });
     console.log('');
   } catch (error) {

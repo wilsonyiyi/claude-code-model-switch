@@ -67,7 +67,8 @@ const { autoLaunchClaude } = require('./commands/launch');
   program
     .command('list')
     .description('List all model configurations')
-    .action(() => listCommand(modelManager));
+    .option('-f, --full', 'Show full model configuration details')
+    .action((options) => listCommand(modelManager, options));
 
   // Use command
   program

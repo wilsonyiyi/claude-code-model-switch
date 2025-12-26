@@ -144,6 +144,37 @@ class ModelManager {
 
     return `${prefix}${name}${desc}${modelConfigs}${lastUsed}`;
   }
+
+  formatModelFull(model, isCurrent = false) {
+    const prefix = isCurrent ? chalk.green('▶ ') : '  ';
+    const name = isCurrent ? chalk.bold(model.name) : model.name;
+
+    const lines = [
+      `${prefix}${name}`,
+      `  ID: ${chalk.gray(model.id)}`,
+      `  Token: ${chalk.gray(model.token)}`,
+      `  Base URL: ${chalk.gray(model.baseUrl)}`,
+      `  Description: ${chalk.gray(model.description || 'N/A')}`,
+      `  Created: ${chalk.gray(new Date(model.createdAt).toLocaleString())}`,
+      `  Last Used: ${chalk.gray(model.lastUsed ? new Date(model.lastUsed).toLocaleString() : 'Never')}`,
+      `  Updated: ${chalk.gray(model.updatedAt ? new Date(model.updatedAt).toLocaleString() : 'N/A')}`
+    ];
+
+    if (model.defaultOpusModel || model.defaultSonnetModel || model.defaultHaikuModel) {
+      lines.push('  Model Configs:');
+      if (model.defaultOpusModel) {
+        lines.push(`    Opus: ${chalk.gray(model.defaultOpusModel)}`);
+      }
+      if (model.defaultSonnetModel) {
+        lines.push(`    Sonnet: ${chalk.gray(model.defaultSonnetModel)}`);
+      }
+      if (model.defaultHaikuModel) {
+        lines.push(`    Haiku: ${chalk.gray(model.defaultHaikuModel)}`);
+      }
+    }
+
+    return lines.join('\n');
+  }
 }
 
 module.exports = ModelManager;
