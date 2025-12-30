@@ -1,7 +1,7 @@
-const chalk = require('chalk');
-const ConfigManager = require('../configManager');
+import chalk from 'chalk';
+import ConfigManager from '../configManager.js';
 
-async function historyCommand(options) {
+export default async function historyCommand(options) {
   try {
     const configManager = new ConfigManager();
     const manager = configManager;
@@ -26,5 +26,3 @@ async function historyCommand(options) {
     process.exit(1);
   }
 }
-
-module.exports = historyCommand;

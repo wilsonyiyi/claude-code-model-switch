@@ -1,7 +1,7 @@
-const chalk = require('chalk');
-const { selectModel, promptModelUpdates, filterUpdates } = require('../utils/interactiveHelpers');
+import chalk from 'chalk';
+import { selectModel, promptModelUpdates, filterUpdates } from '../utils/interactiveHelpers.js';
 
-async function updateCommand(modelManager, name, options, inquirer) {
+export default async function updateCommand(modelManager, name, options, inquirer) {
   try {
     let modelName = name;
 
@@ -70,5 +70,3 @@ async function updateCommand(modelManager, name, options, inquirer) {
     process.exit(1);
   }
 }
-
-module.exports = updateCommand;

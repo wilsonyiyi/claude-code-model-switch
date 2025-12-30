@@ -1,5 +1,5 @@
-const { spawn } = require('child_process');
-const chalk = require('chalk');
+import { spawn } from 'child_process';
+import chalk from 'chalk';
 
 /**
  * Launches Claude with the specified model configuration
@@ -7,7 +7,7 @@ const chalk = require('chalk');
  * @param {string[]} extraArgs - Additional arguments to pass to claude
  * @returns {Promise<number>} - Exit code
  */
-function launchClaude(model, extraArgs = []) {
+export function launchClaude(model, extraArgs = []) {
   return new Promise((resolve, reject) => {
     // Display launch info
     console.log(chalk.blue(`\n🚀 Launching claude with model: ${chalk.bold(model.name)}`));
@@ -46,7 +46,7 @@ function launchClaude(model, extraArgs = []) {
 
     claudeCodeProcess.on('error', (error) => {
       if (error.code === 'ENOENT') {
-        console.error(chalk.red('❌ Error: \"claude\" command not found.'));
+        console.error(chalk.red('❌ Error: "claude" command not found.'));
         console.log(chalk.yellow('\nPlease ensure claude is installed:'));
         console.log(chalk.gray('  npm install -g claude\n'));
       } else {
@@ -65,7 +65,7 @@ function launchClaude(model, extraArgs = []) {
  * Displays model information (formatted output)
  * @param {Object} model - Model configuration object
  */
-function displayModelInfo(model) {
+export function displayModelInfo(model) {
   console.log(chalk.gray(`   Description: ${model.description || 'N/A'}`));
 
   if (model.defaultOpusModel || model.defaultSonnetModel || model.defaultHaikuModel) {
@@ -82,8 +82,3 @@ function displayModelInfo(model) {
   }
   console.log('');
 }
-
-module.exports = {
-  launchClaude,
-  displayModelInfo
-};

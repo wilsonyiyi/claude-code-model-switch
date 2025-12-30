@@ -1,7 +1,4 @@
-const ModelManager = require('./modelManager');
-const ConfigManager = require('./configManager');
+import ModelManager from './modelManager.js';
+import ConfigManager from './configManager.js';
 
-module.exports = {
-  ModelManager,
-  ConfigManager
-};
+export { ModelManager, ConfigManager };

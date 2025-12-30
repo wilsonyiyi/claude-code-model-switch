@@ -1,6 +1,6 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-async function currentCommand(modelManager) {
+export default async function currentCommand(modelManager) {
   try {
     const model = await modelManager.getCurrentModel();
 
@@ -22,5 +22,3 @@ async function currentCommand(modelManager) {
     process.exit(1);
   }
 }
-
-module.exports = currentCommand;

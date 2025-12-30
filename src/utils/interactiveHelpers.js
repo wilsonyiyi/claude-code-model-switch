@@ -1,6 +1,6 @@
-const inquirer = require('inquirer');
-const chalk = require('chalk');
-const { PROVIDERS } = require('../providers');
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import { PROVIDERS } from '../providers.js';
 
 /**
  * Prompts user to select a model from the list
@@ -8,7 +8,7 @@ const { PROVIDERS } = require('../providers');
  * @param {string} message - Prompt message
  * @returns {Promise<string>} - Selected model name
  */
-async function selectModel(models, message = 'Select a model:') {
+export async function selectModel(models, message = 'Select a model:') {
   if (models.length === 0) {
     throw new Error('No models available');
   }
@@ -36,7 +36,7 @@ async function selectModel(models, message = 'Select a model:') {
  * @param {boolean} defaultAnswer - Default answer
  * @returns {Promise<boolean>} - User confirmation
  */
-async function confirmAction(message, defaultAnswer = false) {
+export async function confirmAction(message, defaultAnswer = false) {
   const answer = await inquirer.prompt([
     {
       type: 'confirm',
@@ -52,7 +52,7 @@ async function confirmAction(message, defaultAnswer = false) {
  * Prompts for model creation details
  * @returns {Promise<Object>} - Model configuration answers
  */
-async function promptNewModelDetails() {
+export async function promptNewModelDetails() {
   const answers = await inquirer.prompt([
     { type: 'input', name: 'name', message: 'Model name:' },
     { type: 'password', name: 'token', message: 'API Token:' },
@@ -101,7 +101,7 @@ async function promptNewModelDetails() {
  * @param {Object} currentModel - Current model configuration
  * @returns {Promise<Object>} - Update answers
  */
-async function promptModelUpdates(currentModel) {
+export async function promptModelUpdates(currentModel) {
   console.log(chalk.blue('\nCurrent model configuration:'));
   console.log(chalk.gray(`  Name: ${currentModel.name}`));
   console.log(chalk.gray(`  Description: ${currentModel.description || 'N/A'}`));
@@ -181,7 +181,7 @@ async function promptModelUpdates(currentModel) {
  * @param {Object} currentModel - Current model configuration
  * @returns {Object} - Filtered updates
  */
-function filterUpdates(updates, currentModel) {
+export function filterUpdates(updates, currentModel) {
   const filteredUpdates = {};
 
   if (updates.name && updates.name !== currentModel.name) filteredUpdates.name = updates.name;
@@ -208,11 +208,11 @@ function filterUpdates(updates, currentModel) {
 
 /**
  * Prompts for model selection from provider presets
- * @param {Object} inquirer - Inquirer instance
+ * @param {Object} inquirerInstance - Inquirer instance
  * @returns {Promise<Object>} - Model configuration answers
  */
-async function promptModelFromProvider(inquirer) {
-  const { provider } = await inquirer.prompt([
+export async function promptModelFromProvider(inquirerInstance) {
+  const { provider } = await inquirerInstance.prompt([
     {
       type: 'list',
       name: 'provider',
@@ -227,7 +227,7 @@ async function promptModelFromProvider(inquirer) {
   const selectedProvider = PROVIDERS[provider];
 
   // Basic information
-  const answers = await inquirer.prompt([
+  const answers = await inquirerInstance.prompt([
     {
       type: 'input',
       name: 'name',
@@ -242,7 +242,7 @@ async function promptModelFromProvider(inquirer) {
 
   // Custom provider needs additional info
   if (provider === 'custom') {
-    const customAnswers = await inquirer.prompt([
+    const customAnswers = await inquirerInstance.prompt([
       {
         type: 'input',
         name: 'baseUrl',
@@ -261,7 +261,7 @@ async function promptModelFromProvider(inquirer) {
     answers.description = `${selectedProvider.name} configuration`;
 
     // Confirm using preset model configurations
-    const { useModels } = await inquirer.prompt([
+    const { useModels } = await inquirerInstance.prompt([
       {
         type: 'confirm',
         name: 'useModels',
@@ -279,12 +279,3 @@ async function promptModelFromProvider(inquirer) {
 
   return answers;
 }
-
-module.exports = {
-  selectModel,
-  confirmAction,
-  promptNewModelDetails,
-  promptModelUpdates,
-  filterUpdates,
-  promptModelFromProvider
-};

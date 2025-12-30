@@ -1,8 +1,8 @@
-const chalk = require('chalk');
-const { selectModel } = require('../utils/interactiveHelpers');
-const { launchClaude } = require('../utils/claudeLauncher');
+import chalk from 'chalk';
+import { selectModel } from '../utils/interactiveHelpers.js';
+import { launchClaude } from '../utils/claudeLauncher.js';
 
-async function useCommand(modelManager, name, inquirer, processArgv) {
+export default async function useCommand(modelManager, name, inquirer, processArgv) {
   try {
     let modelName = name;
 
@@ -29,5 +29,3 @@ async function useCommand(modelManager, name, inquirer, processArgv) {
     process.exit(1);
   }
 }
-
-module.exports = useCommand;

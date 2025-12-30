@@ -1,8 +1,8 @@
-const chalk = require('chalk');
-const { promptModelFromProvider } = require('../utils/interactiveHelpers');
-const { launchClaude } = require('../utils/claudeLauncher');
+import chalk from 'chalk';
+import { promptModelFromProvider } from '../utils/interactiveHelpers.js';
+import { launchClaude } from '../utils/claudeLauncher.js';
 
-async function providerCommand(modelManager, inquirer, processArgv = []) {
+export default async function providerCommand(modelManager, inquirer, processArgv = []) {
   try {
     // Get model configuration from provider selection
     const answers = await promptModelFromProvider(inquirer);
@@ -44,5 +44,3 @@ async function providerCommand(modelManager, inquirer, processArgv = []) {
     process.exit(1);
   }
 }
-
-module.exports = providerCommand;

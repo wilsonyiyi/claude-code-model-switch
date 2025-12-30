@@ -1,6 +1,6 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-async function removeCommand(modelManager, name, inquirer) {
+export default async function removeCommand(modelManager, name, inquirer) {
   try {
     const { confirm } = await inquirer.prompt([
       {
@@ -23,5 +23,3 @@ async function removeCommand(modelManager, name, inquirer) {
     process.exit(1);
   }
 }
-
-module.exports = removeCommand;

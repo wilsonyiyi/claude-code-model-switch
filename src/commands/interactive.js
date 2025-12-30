@@ -1,9 +1,9 @@
-const chalk = require('chalk');
-const { selectModel, confirmAction, promptNewModelDetails, promptModelUpdates, filterUpdates, promptModelFromProvider } = require('../utils/interactiveHelpers');
-const { launchClaude } = require('../utils/claudeLauncher');
-const ConfigManager = require('../configManager');
+import chalk from 'chalk';
+import { selectModel, confirmAction, promptNewModelDetails, promptModelUpdates, filterUpdates, promptModelFromProvider } from '../utils/interactiveHelpers.js';
+import { launchClaude } from '../utils/claudeLauncher.js';
+import ConfigManager from '../configManager.js';
 
-async function interactiveCommand(modelManager, inquirer) {
+export async function interactiveCommand(modelManager, inquirer) {
   const { action } = await inquirer.prompt([
     {
       type: 'list',
@@ -31,7 +31,7 @@ async function interactiveCommand(modelManager, inquirer) {
   await handleInteractiveAction(action, modelManager, inquirer);
 }
 
-async function handleInteractiveAction(action, modelManager, inquirer) {
+export async function handleInteractiveAction(action, modelManager, inquirer) {
   const models = await modelManager.listModels();
 
   switch (action) {
@@ -215,8 +215,3 @@ async function handleInteractiveAction(action, modelManager, inquirer) {
     }
   }
 }
-
-module.exports = {
-  interactiveCommand,
-  handleInteractiveAction
-};

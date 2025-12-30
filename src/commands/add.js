@@ -1,6 +1,6 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-async function addCommand(modelManager, options) {
+export default async function addCommand(modelManager, options) {
   try {
     const modelConfig = {};
     if (options.opusModel) modelConfig.defaultOpusModel = options.opusModel;
@@ -15,5 +15,3 @@ async function addCommand(modelManager, options) {
     process.exit(1);
   }
 }
-
-module.exports = addCommand;

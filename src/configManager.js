@@ -1,6 +1,6 @@
-const os = require('os');
-const path = require('path');
-const fs = require('fs-extra');
+import os from 'os';
+import path from 'path';
+import fs from 'fs-extra';
 
 class ConfigManager {
   static CLAUDE_DEFAULT_MODELS = {
@@ -118,4 +118,4 @@ class ConfigManager {
   }
 }
 
-module.exports = ConfigManager;
+export default ConfigManager;

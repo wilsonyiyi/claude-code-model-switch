@@ -3,7 +3,7 @@
  * Users select a provider and only need to provide their API key
  */
 
-const PROVIDERS = {
+export const PROVIDERS = {
   anthropic: {
     name: 'Anthropic',
     baseUrl: 'https://api.anthropic.com',
@@ -51,5 +51,3 @@ const PROVIDERS = {
     modelConfig: {}
   }
 };
-
-module.exports = { PROVIDERS };

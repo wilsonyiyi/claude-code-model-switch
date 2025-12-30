@@ -1,10 +1,10 @@
-const chalk = require('chalk');
-const { launchClaude } = require('../utils/claudeLauncher');
+import chalk from 'chalk';
+import { launchClaude } from '../utils/claudeLauncher.js';
 
 /**
  * Handles the automatic launch when no arguments are provided
  */
-async function autoLaunchClaude(modelManager, processArgv) {
+export async function autoLaunchClaude(modelManager, processArgv) {
   try {
     const currentModel = await modelManager.getCurrentModel();
     const models = await modelManager.listModels();
@@ -29,7 +29,3 @@ async function autoLaunchClaude(modelManager, processArgv) {
     return { shouldExit: true, exitCode: 1 };
   }
 }
-
-module.exports = {
-  autoLaunchClaude
-};

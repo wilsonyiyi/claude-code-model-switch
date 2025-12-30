@@ -1,123 +1,121 @@
 #!/usr/bin/env node
 
-const { Command } = require('commander');
-const chalk = require('chalk');
-const ModelManager = require('./modelManager');
+import { Command } from 'commander';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import { createRequire } from 'module';
+
+import ModelManager from './modelManager.js';
+import addCommand from './commands/add.js';
+import listCommand from './commands/list.js';
+import currentCommand from './commands/current.js';
+import historyCommand from './commands/history.js';
+import removeCommand from './commands/remove.js';
+import updateCommand from './commands/update.js';
+import useCommand from './commands/use.js';
+import providerCommand from './commands/provider.js';
+import { interactiveCommand } from './commands/interactive.js';
+import { autoLaunchClaude } from './commands/launch.js';
+
+// Use createRequire for JSON imports (ESM doesn't natively support JSON)
+const require = createRequire(import.meta.url);
 const pkg = require('../package.json');
 
-// Import command modules
-const addCommand = require('./commands/add');
-const listCommand = require('./commands/list');
-const currentCommand = require('./commands/current');
-const historyCommand = require('./commands/history');
-const removeCommand = require('./commands/remove');
-const updateCommand = require('./commands/update');
-const useCommand = require('./commands/use');
-const providerCommand = require('./commands/provider');
-const { interactiveCommand } = require('./commands/interactive');
-const { autoLaunchClaude } = require('./commands/launch');
+const program = new Command();
+const modelManager = new ModelManager();
 
-// Dynamic import for inquirer to avoid ESM/CJS conflict
-(async () => {
-  const inquirerModule = await import('inquirer');
-  const inquirer = inquirerModule.default;
+program
+  .name('cm')
+  .description('Claude Code model configuration manager')
+  .version(pkg.version);
 
-  const program = new Command();
-  const modelManager = new ModelManager();
-
-  program
-    .name('cm')
-    .description('Claude Code model configuration manager')
-    .version(pkg.version);
-
-  // Check if no arguments provided - if so, try to launch claude
-  const args = process.argv.slice(2);
-  if (args.length === 0) {
-    const result = await autoLaunchClaude(modelManager, process.argv);
-    if (result.shouldExit) {
-      if (result.exitCode === 1) {
-        // Show help for error cases
-        program.help();
-      }
-      process.exit(result.exitCode || 0);
+// Check if no arguments provided - if so, try to launch claude
+const args = process.argv.slice(2);
+if (args.length === 0) {
+  const result = await autoLaunchClaude(modelManager, process.argv);
+  if (result.shouldExit) {
+    if (result.exitCode === 1) {
+      // Show help for error cases
+      program.help();
     }
+    process.exit(result.exitCode || 0);
   }
+}
 
-  // Provider command (add via preset providers)
-  program
-    .command('provider')
-    .alias('p')
-    .description('Add model via provider presets (interactive)')
-    .action(() => providerCommand(modelManager, inquirer, process.argv));
+// Provider command (add via preset providers)
+program
+  .command('provider')
+  .alias('p')
+  .description('Add model via provider presets (interactive)')
+  .action(() => providerCommand(modelManager, inquirer, process.argv));
 
-  // Add command
-  program
-    .command('add')
-    .description('Add a new model configuration (manual)')
-    .requiredOption('-n, --name <name>', 'Model name')
-    .requiredOption('-t, --token <token>', 'Anthropic API token')
-    .requiredOption('-b, --base-url <url>', 'Anthropic base URL')
-    .option('-d, --description <description>', 'Model description')
-    .option('--opus-model <model>', 'Default Opus model (optional)')
-    .option('--sonnet-model <model>', 'Default Sonnet model (optional)')
-    .option('--haiku-model <model>', 'Default Haiku model (optional)')
-    .action((options) => addCommand(modelManager, options));
+// Add command
+program
+  .command('add')
+  .description('Add a new model configuration (manual)')
+  .requiredOption('-n, --name <name>', 'Model name')
+  .requiredOption('-t, --token <token>', 'Anthropic API token')
+  .requiredOption('-b, --base-url <url>', 'Anthropic base URL')
+  .option('-d, --description <description>', 'Model description')
+  .option('--opus-model <model>', 'Default Opus model (optional)')
+  .option('--sonnet-model <model>', 'Default Sonnet model (optional)')
+  .option('--haiku-model <model>', 'Default Haiku model (optional)')
+  .action((options) => addCommand(modelManager, options));
 
-  // List command
-  program
-    .command('list')
-    .description('List all model configurations')
-    .option('-f, --full', 'Show full model configuration details')
-    .action((options) => listCommand(modelManager, options));
+// List command
+program
+  .command('list')
+  .description('List all model configurations')
+  .option('-f, --full', 'Show full model configuration details')
+  .action((options) => listCommand(modelManager, options));
 
-  // Use command
-  program
-    .command('use')
-    .description('Switch to a model configuration and launch Claude')
-    .argument('[name]', 'Model name (interactive mode if not specified)')
-    .action((name) => useCommand(modelManager, name, inquirer, process.argv));
+// Use command
+program
+  .command('use')
+  .description('Switch to a model configuration and launch Claude')
+  .argument('[name]', 'Model name (interactive mode if not specified)')
+  .action((name) => useCommand(modelManager, name, inquirer, process.argv));
 
-  // Current command
-  program
-    .command('current')
-    .description('Show current model configuration')
-    .action(() => currentCommand(modelManager));
+// Current command
+program
+  .command('current')
+  .description('Show current model configuration')
+  .action(() => currentCommand(modelManager));
 
-  // Remove command
-  program
-    .command('remove')
-    .description('Remove a model configuration')
-    .argument('<name>', 'Model name')
-    .action((name) => removeCommand(modelManager, name, inquirer));
+// Remove command
+program
+  .command('remove')
+  .description('Remove a model configuration')
+  .argument('<name>', 'Model name')
+  .action((name) => removeCommand(modelManager, name, inquirer));
 
-  // History command
-  program
-    .command('history')
-    .description('Show configuration change history')
-    .option('-l, --limit <number>', 'Number of records to show', '20')
-    .action((options) => historyCommand(options));
+// History command
+program
+  .command('history')
+  .description('Show configuration change history')
+  .option('-l, --limit <number>', 'Number of records to show', '20')
+  .action((options) => historyCommand(options));
 
-  // Update command
-  program
-    .command('update')
-    .description('Update a model configuration')
-    .argument('[name]', 'Model name to update (interactive if not specified)')
-    .option('-n, --new-name <name>', 'New name for the model')
-    .option('-t, --token <token>', 'New API token')
-    .option('-b, --base-url <url>', 'New base URL')
-    .option('-d, --description <description>', 'New description')
-    .option('--opus-model <model>', 'Default Opus model')
-    .option('--sonnet-model <model>', 'Default Sonnet model')
-    .option('--haiku-model <model>', 'Default Haiku model')
-    .action((name, options) => updateCommand(modelManager, name, options, inquirer));
+// Update command
+program
+  .command('update')
+  .description('Update a model configuration')
+  .argument('[name]', 'Model name to update (interactive if not specified)')
+  .option('-n, --new-name <name>', 'New name for the model')
+  .option('-t, --token <token>', 'New API token')
+  .option('-b, --base-url <url>', 'New base URL')
+  .option('-d, --description <description>', 'New description')
+  .option('--opus-model <model>', 'Default Opus model')
+  .option('--sonnet-model <model>', 'Default Sonnet model')
+  .option('--haiku-model <model>', 'Default Haiku model')
+  .action((name, options) => updateCommand(modelManager, name, options, inquirer));
 
-  // Interactive mode
-  program
-    .command('interactive')
-    .alias('i')
-    .description('Interactive mode for managing models')
-    .action(() => interactiveCommand(modelManager, inquirer));
+// Interactive mode
+program
+  .command('interactive')
+  .alias('i')
+  .description('Interactive mode for managing models')
+  .action(() => interactiveCommand(modelManager, inquirer));
 
-  // Parse arguments
-  const argv = program.parse(process.argv);
-})();
+// Parse arguments
+program.parse(process.argv);

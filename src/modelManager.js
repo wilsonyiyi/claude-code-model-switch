@@ -1,5 +1,5 @@
-const ConfigManager = require('./configManager');
-const chalk = require('chalk');
+import ConfigManager from './configManager.js';
+import chalk from 'chalk';
 
 class ModelManager {
   constructor() {
@@ -177,4 +177,4 @@ class ModelManager {
   }
 }
 
-module.exports = ModelManager;
+export default ModelManager;
