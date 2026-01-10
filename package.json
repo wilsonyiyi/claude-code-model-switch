@@ -1,6 +1,6 @@
 {
   "name": "@wilson_janet/claude-code-model-switch",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "type": "module",
   "description": "A CLI tool to manage Claude Code model switching with multiple configurations",
   "main": "./dist/index.js",
@@ -11,7 +11,11 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "dev": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "bash test.sh",
+    "prepublishOnly": "npm run build",
+    "publish": "npm publish",
+    "publish:dry": "npm publish --dry-run",
+    "publish:beta": "npm publish --tag beta"
   },
   "keywords": [
     "claude",
@@ -25,6 +29,13 @@
     "type": "git",
     "url": "https://github.com/wilsonyiyi/claude-code-model-switch.git"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "README-zh.md",
+    "AGENTS.md",
+    "package.json"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
