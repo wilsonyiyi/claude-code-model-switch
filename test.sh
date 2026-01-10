@@ -48,7 +48,7 @@ TEST_MODEL_NAME="test_$(date +%s)_$RANDOM"
 # Test 1: Add model
 echo ""
 echo "Test 1: Adding model ($TEST_MODEL_NAME)"
-node src/cli.js add --name "$TEST_MODEL_NAME" --token sk-test-xyz --base-url https://api.anthropic.com --description "Auto-generated test model"
+node dist/cli.js add --name "$TEST_MODEL_NAME" --token sk-test-xyz --base-url https://api.anthropic.com --description "Auto-generated test model"
 if [ $? -eq 0 ]; then
     echo "✓ Add model: PASSED"
 else
@@ -61,7 +61,7 @@ fi
 # Test 2: List models
 echo ""
 echo "Test 2: Listing models"
-node src/cli.js list > /dev/null
+node dist/cli.js list > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ List models: PASSED"
 else
@@ -73,7 +73,7 @@ fi
 # Test 3: Use command exists
 echo ""
 echo "Test 3: Use command functionality"
-node src/cli.js use --help > /dev/null 2>&1
+node dist/cli.js use --help > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "✓ Use command exists"
     echo "✓ Use command structure verified"
@@ -86,7 +86,7 @@ fi
 # Test 4: Current model
 echo ""
 echo "Test 4: Getting current model"
-node src/cli.js current > /dev/null
+node dist/cli.js current > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ Current model: PASSED"
 else
@@ -98,7 +98,7 @@ fi
 # Test 5: History
 echo ""
 echo "Test 5: Viewing history"
-node src/cli.js history > /dev/null
+node dist/cli.js history > /dev/null
 if [ $? -eq 0 ]; then
     echo "✓ History: PASSED"
 else
@@ -110,7 +110,7 @@ fi
 # Test 6: Remove model
 echo ""
 echo "Test 6: Removing model"
-echo "y" | node src/cli.js remove "$TEST_MODEL_NAME" > /dev/null 2>&1
+echo "y" | node dist/cli.js remove "$TEST_MODEL_NAME" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "✓ Remove model: PASSED"
 else

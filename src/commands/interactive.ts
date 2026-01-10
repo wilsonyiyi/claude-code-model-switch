@@ -2,8 +2,12 @@ import chalk from 'chalk';
 import { selectModel, confirmAction, promptNewModelDetails, promptModelUpdates, filterUpdates, promptModelFromProvider } from '../utils/interactiveHelpers.js';
 import { launchClaude } from '../utils/claudeLauncher.js';
 import ConfigManager from '../configManager.js';
+import type ModelManager from '../modelManager.js';
+import type { InquirerType, ModelConfig } from '../types.js';
 
-export async function interactiveCommand(modelManager, inquirer) {
+type InteractiveAction = 'provider' | 'add' | 'use' | 'list' | 'current' | 'remove' | 'update' | 'history' | 'exit';
+
+export async function interactiveCommand(modelManager: ModelManager, inquirer: InquirerType): Promise<void> {
   const { action } = await inquirer.prompt([
     {
       type: 'list',
@@ -28,10 +32,14 @@ export async function interactiveCommand(modelManager, inquirer) {
     process.exit(0);
   }
 
-  await handleInteractiveAction(action, modelManager, inquirer);
+  await handleInteractiveAction(action as InteractiveAction, modelManager, inquirer);
 }
 
-export async function handleInteractiveAction(action, modelManager, inquirer) {
+export async function handleInteractiveAction(
+  action: InteractiveAction,
+  modelManager: ModelManager,
+  inquirer: InquirerType
+): Promise<void> {
   const models = await modelManager.listModels();
 
   switch (action) {
@@ -68,7 +76,8 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
           await launchClaude(selectedModel, []);
         }
       } catch (error) {
-        console.error(chalk.red(`\nError: ${error.message}`));
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`\nError: ${message}`));
       }
       break;
     }
@@ -77,7 +86,7 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
       const answers = await promptNewModelDetails();
 
       try {
-        const modelConfig = {};
+        const modelConfig: ModelConfig = {};
         if (answers.defaultOpusModel) modelConfig.defaultOpusModel = answers.defaultOpusModel;
         if (answers.defaultSonnetModel) modelConfig.defaultSonnetModel = answers.defaultSonnetModel;
         if (answers.defaultHaikuModel) modelConfig.defaultHaikuModel = answers.defaultHaikuModel;
@@ -91,7 +100,8 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
           if (answers.defaultHaikuModel) console.log(chalk.gray(`  Haiku: ${answers.defaultHaikuModel}`));
         }
       } catch (error) {
-        console.error(chalk.red(`\nError: ${error.message}`));
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`\nError: ${message}`));
       }
       break;
     }
@@ -111,7 +121,8 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
         // Launch Claude
         await launchClaude(selectedModel, []);
       } catch (error) {
-        console.error(chalk.red(`\nError: ${error.message}`));
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`\nError: ${message}`));
       }
       break;
     }
@@ -120,7 +131,7 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
       const currentModel = await modelManager.getCurrentModel();
       console.log(chalk.blue('\nConfigured Models:'));
       models.forEach(model => {
-        console.log(modelManager.formatModel(model, currentModel && currentModel.name === model.name));
+        console.log(modelManager.formatModel(model, currentModel !== null && currentModel.name === model.name));
       });
       console.log('');
       break;
@@ -160,7 +171,8 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
           await modelManager.removeModel(modelName);
           console.log(chalk.green(`\n✓ Model "${modelName}" removed!`));
         } catch (error) {
-          console.error(chalk.red(`\nError: ${error.message}`));
+          const message = error instanceof Error ? error.message : String(error);
+          console.error(chalk.red(`\nError: ${message}`));
         }
       }
       break;
@@ -174,6 +186,11 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
 
       const modelName = await selectModel(models, 'Select a model to update:');
       const selectedModel = await modelManager.getModel(modelName);
+
+      if (!selectedModel) {
+        console.error(chalk.red(`\nModel "${modelName}" not found.`));
+        break;
+      }
 
       const updates = await promptModelUpdates(selectedModel);
       const filteredUpdates = filterUpdates(updates, selectedModel);
@@ -194,7 +211,8 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
         });
         console.log('');
       } catch (error) {
-        console.error(chalk.red(`\nError: ${error.message}`));
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`\nError: ${message}`));
       }
       break;
     }
@@ -206,9 +224,9 @@ export async function handleInteractiveAction(action, modelManager, inquirer) {
       console.log(chalk.blue('\nChange History:'));
       history.changes.slice(0, 20).forEach(change => {
         const timestamp = new Date(change.timestamp).toLocaleString();
-        const action = change.action.toUpperCase();
+        const actionStr = change.action.toUpperCase();
         const color = change.action === 'add' ? chalk.green : change.action === 'remove' ? chalk.red : chalk.yellow;
-        console.log(`  ${chalk.gray(timestamp)} ${color(action)} ${change.modelName}`);
+        console.log(`  ${chalk.gray(timestamp)} ${color(actionStr)} ${change.modelName}`);
       });
       console.log('');
       break;

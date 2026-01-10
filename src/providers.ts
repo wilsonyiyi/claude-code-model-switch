@@ -1,9 +1,11 @@
+import type { Providers } from './types.js';
+
 /**
  * Predefined model provider configurations
  * Users select a provider and only need to provide their API key
  */
 
-export const PROVIDERS = {
+export const PROVIDERS: Providers = {
   anthropic: {
     name: 'Anthropic',
     baseUrl: 'https://api.anthropic.com',

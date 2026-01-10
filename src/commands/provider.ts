@@ -1,8 +1,14 @@
 import chalk from 'chalk';
 import { promptModelFromProvider } from '../utils/interactiveHelpers.js';
 import { launchClaude } from '../utils/claudeLauncher.js';
+import type ModelManager from '../modelManager.js';
+import type { InquirerType } from '../types.js';
 
-export default async function providerCommand(modelManager, inquirer, processArgv = []) {
+export default async function providerCommand(
+  modelManager: ModelManager,
+  inquirer: InquirerType,
+  processArgv: string[] = []
+): Promise<void> {
   try {
     // Get model configuration from provider selection
     const answers = await promptModelFromProvider(inquirer);
@@ -40,7 +46,8 @@ export default async function providerCommand(modelManager, inquirer, processArg
     }
 
   } catch (error) {
-    console.error(chalk.red(`\nError: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`\nError: ${message}`));
     process.exit(1);
   }
 }

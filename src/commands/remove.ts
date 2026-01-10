@@ -1,6 +1,8 @@
 import chalk from 'chalk';
+import type ModelManager from '../modelManager.js';
+import type { InquirerType } from '../types.js';
 
-export default async function removeCommand(modelManager, name, inquirer) {
+export default async function removeCommand(modelManager: ModelManager, name: string, inquirer: InquirerType): Promise<void> {
   try {
     const { confirm } = await inquirer.prompt([
       {
@@ -19,7 +21,8 @@ export default async function removeCommand(modelManager, name, inquirer) {
     await modelManager.removeModel(name);
     console.log(chalk.green(`✓ Model "${name}" removed successfully!`));
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }

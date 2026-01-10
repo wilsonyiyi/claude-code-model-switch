@@ -1,13 +1,24 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
+import type { Config, History, HistoryChange } from './types.js';
+
+interface DefaultModelConfig {
+  ANTHROPIC_DEFAULT_OPUS_MODEL?: string;
+  ANTHROPIC_DEFAULT_SONNET_MODEL?: string;
+  ANTHROPIC_DEFAULT_HAIKU_MODEL?: string;
+}
 
 class ConfigManager {
-  static CLAUDE_DEFAULT_MODELS = {
+  static CLAUDE_DEFAULT_MODELS: DefaultModelConfig = {
     ANTHROPIC_DEFAULT_OPUS_MODEL: 'claude-opus-4-5-20251101',
     ANTHROPIC_DEFAULT_SONNET_MODEL: 'claude-sonnet-4-5-20250929',
     ANTHROPIC_DEFAULT_HAIKU_MODEL: 'claude-haiku-4-5-20251001'
   };
+
+  configDir: string;
+  configFile: string;
+  historyFile: string;
 
   constructor() {
     this.configDir = this.getConfigDir();
@@ -16,7 +27,7 @@ class ConfigManager {
     this.ensureConfigExists();
   }
 
-  getConfigDir() {
+  getConfigDir(): string {
     const platform = os.platform();
 
     if (platform === 'win32') {
@@ -26,7 +37,7 @@ class ConfigManager {
     }
   }
 
-  async ensureConfigExists() {
+  async ensureConfigExists(): Promise<void> {
     try {
       await fs.ensureDir(this.configDir);
 
@@ -35,54 +46,59 @@ class ConfigManager {
           models: [],
           currentModel: null,
           createdAt: new Date().toISOString()
-        }, { spaces: 2 });
+        } as Config, { spaces: 2 });
       }
 
       if (!(await fs.pathExists(this.historyFile))) {
         await fs.writeJson(this.historyFile, {
           changes: []
-        }, { spaces: 2 });
+        } as History, { spaces: 2 });
       }
     } catch (error) {
-      throw new Error(`Failed to initialize config: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to initialize config: ${message}`);
     }
   }
 
-  async getConfig() {
+  async getConfig(): Promise<Config> {
     try {
       await this.ensureConfigExists();
-      return await fs.readJson(this.configFile);
+      return await fs.readJson(this.configFile) as Config;
     } catch (error) {
-      throw new Error(`Failed to read config: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to read config: ${message}`);
     }
   }
 
-  async saveConfig(config) {
+  async saveConfig(config: Config): Promise<void> {
     try {
       await fs.writeJson(this.configFile, config, { spaces: 2 });
     } catch (error) {
-      throw new Error(`Failed to save config: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to save config: ${message}`);
     }
   }
 
-  async getHistory() {
+  async getHistory(): Promise<History> {
     try {
-      return await fs.readJson(this.historyFile);
+      return await fs.readJson(this.historyFile) as History;
     } catch (error) {
-      throw new Error(`Failed to read history: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to read history: ${message}`);
     }
   }
 
-  async saveHistory(history) {
+  async saveHistory(history: History): Promise<void> {
     try {
       await fs.writeJson(this.historyFile, history, { spaces: 2 });
     } catch (error) {
-      throw new Error(`Failed to save history: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to save history: ${message}`);
     }
   }
 
-  async getDefaultModelConfig() {
-    const envConfig = {};
+  async getDefaultModelConfig(): Promise<DefaultModelConfig> {
+    const envConfig: DefaultModelConfig = {};
 
     // Check environment variables for model overrides
     if (process.env.ANTHROPIC_DEFAULT_OPUS_MODEL) {
@@ -98,9 +114,9 @@ class ConfigManager {
     return envConfig;
   }
 
-  async addChange(action, modelName, details) {
+  async addChange(action: HistoryChange['action'], modelName: string, details: string): Promise<HistoryChange> {
     const history = await this.getHistory();
-    const change = {
+    const change: HistoryChange = {
       id: Date.now(),
       timestamp: new Date().toISOString(),
       action,

@@ -1,19 +1,33 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { PROVIDERS } from '../providers.js';
+import type { Model, ModelConfig, NewModelAnswers, ProviderAnswers, ModelUpdates, InquirerType } from '../types.js';
+
+interface ModelChoice {
+  name: string;
+  value: string;
+}
+
+interface PromptUpdates {
+  name?: string;
+  token?: string;
+  baseUrl?: string;
+  description?: string;
+  configureModels?: boolean;
+  defaultOpusModel?: string;
+  defaultSonnetModel?: string;
+  defaultHaikuModel?: string;
+}
 
 /**
  * Prompts user to select a model from the list
- * @param {Object[]} models - Array of model configurations
- * @param {string} message - Prompt message
- * @returns {Promise<string>} - Selected model name
  */
-export async function selectModel(models, message = 'Select a model:') {
+export async function selectModel(models: Model[], message: string = 'Select a model:'): Promise<string> {
   if (models.length === 0) {
     throw new Error('No models available');
   }
 
-  const choices = models.map(m => ({
+  const choices: ModelChoice[] = models.map(m => ({
     name: `${m.name}${m.description ? ` - ${m.description}` : ''}`,
     value: m.name
   }));
@@ -32,11 +46,8 @@ export async function selectModel(models, message = 'Select a model:') {
 
 /**
  * Prompts for confirmation
- * @param {string} message - Confirmation message
- * @param {boolean} defaultAnswer - Default answer
- * @returns {Promise<boolean>} - User confirmation
  */
-export async function confirmAction(message, defaultAnswer = false) {
+export async function confirmAction(message: string, defaultAnswer: boolean = false): Promise<boolean> {
   const answer = await inquirer.prompt([
     {
       type: 'confirm',
@@ -50,9 +61,8 @@ export async function confirmAction(message, defaultAnswer = false) {
 
 /**
  * Prompts for model creation details
- * @returns {Promise<Object>} - Model configuration answers
  */
-export async function promptNewModelDetails() {
+export async function promptNewModelDetails(): Promise<NewModelAnswers> {
   const answers = await inquirer.prompt([
     { type: 'input', name: 'name', message: 'Model name:' },
     { type: 'password', name: 'token', message: 'API Token:' },
@@ -93,15 +103,13 @@ export async function promptNewModelDetails() {
     Object.assign(answers, modelAnswers);
   }
 
-  return answers;
+  return answers as NewModelAnswers;
 }
 
 /**
  * Prompts for model update details
- * @param {Object} currentModel - Current model configuration
- * @returns {Promise<Object>} - Update answers
  */
-export async function promptModelUpdates(currentModel) {
+export async function promptModelUpdates(currentModel: Model): Promise<PromptUpdates> {
   console.log(chalk.blue('\nCurrent model configuration:'));
   console.log(chalk.gray(`  Name: ${currentModel.name}`));
   console.log(chalk.gray(`  Description: ${currentModel.description || 'N/A'}`));
@@ -172,17 +180,14 @@ export async function promptModelUpdates(currentModel) {
     Object.assign(updates, modelAnswers);
   }
 
-  return updates;
+  return updates as PromptUpdates;
 }
 
 /**
  * Filters update object to only include changed values
- * @param {Object} updates - Raw updates from prompts
- * @param {Object} currentModel - Current model configuration
- * @returns {Object} - Filtered updates
  */
-export function filterUpdates(updates, currentModel) {
-  const filteredUpdates = {};
+export function filterUpdates(updates: PromptUpdates, currentModel: Model): ModelUpdates {
+  const filteredUpdates: ModelUpdates = {};
 
   if (updates.name && updates.name !== currentModel.name) filteredUpdates.name = updates.name;
   if (updates.token && updates.token !== currentModel.token) filteredUpdates.token = updates.token;
@@ -208,10 +213,8 @@ export function filterUpdates(updates, currentModel) {
 
 /**
  * Prompts for model selection from provider presets
- * @param {Object} inquirerInstance - Inquirer instance
- * @returns {Promise<Object>} - Model configuration answers
  */
-export async function promptModelFromProvider(inquirerInstance) {
+export async function promptModelFromProvider(inquirerInstance: InquirerType): Promise<ProviderAnswers> {
   const { provider } = await inquirerInstance.prompt([
     {
       type: 'list',
@@ -227,7 +230,7 @@ export async function promptModelFromProvider(inquirerInstance) {
   const selectedProvider = PROVIDERS[provider];
 
   // Basic information
-  const answers = await inquirerInstance.prompt([
+  const answers: Partial<ProviderAnswers> = await inquirerInstance.prompt([
     {
       type: 'input',
       name: 'name',
@@ -277,5 +280,5 @@ export async function promptModelFromProvider(inquirerInstance) {
     }
   }
 
-  return answers;
+  return answers as ProviderAnswers;
 }

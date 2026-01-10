@@ -1,7 +1,14 @@
 import chalk from 'chalk';
 import { selectModel, promptModelUpdates, filterUpdates } from '../utils/interactiveHelpers.js';
+import type ModelManager from '../modelManager.js';
+import type { UpdateCommandOptions, InquirerType, ModelUpdates } from '../types.js';
 
-export default async function updateCommand(modelManager, name, options, inquirer) {
+export default async function updateCommand(
+  modelManager: ModelManager,
+  name: string | undefined,
+  options: UpdateCommandOptions,
+  inquirer: InquirerType
+): Promise<void> {
   try {
     let modelName = name;
 
@@ -51,7 +58,7 @@ export default async function updateCommand(modelManager, name, options, inquire
 
     } else {
       // Command-line updates
-      const updates = {};
+      const updates: ModelUpdates = {};
       if (options.newName) updates.name = options.newName;
       if (options.token) updates.token = options.token;
       if (options.baseUrl) updates.baseUrl = options.baseUrl;
@@ -66,7 +73,8 @@ export default async function updateCommand(modelManager, name, options, inquire
     }
 
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }

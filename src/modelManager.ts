@@ -1,12 +1,21 @@
 import ConfigManager from './configManager.js';
 import chalk from 'chalk';
+import type { Model, ModelConfig, ModelUpdates, Config } from './types.js';
 
 class ModelManager {
+  configManager: ConfigManager;
+
   constructor() {
     this.configManager = new ConfigManager();
   }
 
-  async addModel(name, token, baseUrl, description, modelConfig = {}) {
+  async addModel(
+    name: string,
+    token: string,
+    baseUrl: string,
+    description?: string,
+    modelConfig: ModelConfig = {}
+  ): Promise<Model> {
     if (!name || !token || !baseUrl) {
       throw new Error('Name, token, and baseUrl are required');
     }
@@ -19,7 +28,7 @@ class ModelManager {
 
     const defaultModelConfig = await this.configManager.getDefaultModelConfig();
 
-    const model = {
+    const model: Model = {
       id: Date.now().toString(),
       name,
       token,
@@ -27,7 +36,6 @@ class ModelManager {
       description: description || '',
       createdAt: new Date().toISOString(),
       lastUsed: null,
-      // Optional model configuration variables
       defaultOpusModel: modelConfig.defaultOpusModel || defaultModelConfig.ANTHROPIC_DEFAULT_OPUS_MODEL,
       defaultSonnetModel: modelConfig.defaultSonnetModel || defaultModelConfig.ANTHROPIC_DEFAULT_SONNET_MODEL,
       defaultHaikuModel: modelConfig.defaultHaikuModel || defaultModelConfig.ANTHROPIC_DEFAULT_HAIKU_MODEL
@@ -40,17 +48,17 @@ class ModelManager {
     return model;
   }
 
-  async listModels() {
+  async listModels(): Promise<Model[]> {
     const config = await this.configManager.getConfig();
     return config.models;
   }
 
-  async getModel(name) {
+  async getModel(name: string): Promise<Model | undefined> {
     const config = await this.configManager.getConfig();
     return config.models.find(m => m.name === name);
   }
 
-  async removeModel(name) {
+  async removeModel(name: string): Promise<Model> {
     const config = await this.configManager.getConfig();
     const index = config.models.findIndex(m => m.name === name);
 
@@ -70,7 +78,7 @@ class ModelManager {
     return removed;
   }
 
-  async switchModel(name) {
+  async switchModel(name: string): Promise<Model> {
     const model = await this.getModel(name);
 
     if (!model) {
@@ -88,15 +96,15 @@ class ModelManager {
     return model;
   }
 
-  async getCurrentModel() {
+  async getCurrentModel(): Promise<Model | null> {
     const config = await this.configManager.getConfig();
     if (!config.currentModel) {
       return null;
     }
-    return this.getModel(config.currentModel);
+    return (await this.getModel(config.currentModel)) || null;
   }
 
-  async updateModel(name, updates) {
+  async updateModel(name: string, updates: ModelUpdates): Promise<Model> {
     const config = await this.configManager.getConfig();
     const model = config.models.find(m => m.name === name);
 
@@ -120,7 +128,7 @@ class ModelManager {
     return model;
   }
 
-  formatModel(model, isCurrent = false) {
+  formatModel(model: Model, isCurrent: boolean = false): string {
     const prefix = isCurrent ? chalk.green('▶ ') : '  ';
     const name = isCurrent ? chalk.bold(model.name) : model.name;
     const desc = model.description ? chalk.gray(` - ${model.description}`) : '';
@@ -145,7 +153,7 @@ class ModelManager {
     return `${prefix}${name}${desc}${modelConfigs}${lastUsed}`;
   }
 
-  formatModelFull(model, isCurrent = false) {
+  formatModelFull(model: Model, isCurrent: boolean = false): string {
     const prefix = isCurrent ? chalk.green('▶ ') : '  ';
     const name = isCurrent ? chalk.bold(model.name) : model.name;
 

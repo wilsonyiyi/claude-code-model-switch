@@ -1,8 +1,15 @@
 import chalk from 'chalk';
 import { selectModel } from '../utils/interactiveHelpers.js';
 import { launchClaude } from '../utils/claudeLauncher.js';
+import type ModelManager from '../modelManager.js';
+import type { InquirerType } from '../types.js';
 
-export default async function useCommand(modelManager, name, inquirer, processArgv) {
+export default async function useCommand(
+  modelManager: ModelManager,
+  name: string | undefined,
+  inquirer: InquirerType,
+  processArgv: string[]
+): Promise<void> {
   try {
     let modelName = name;
 
@@ -25,7 +32,8 @@ export default async function useCommand(modelManager, name, inquirer, processAr
     const claudeArgs = processArgv.slice(3);
     await launchClaude(selectedModel, claudeArgs);
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }

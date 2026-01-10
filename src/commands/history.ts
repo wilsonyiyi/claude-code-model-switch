@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import ConfigManager from '../configManager.js';
+import type { HistoryCommandOptions } from '../types.js';
 
-export default async function historyCommand(options) {
+export default async function historyCommand(options: HistoryCommandOptions): Promise<void> {
   try {
     const configManager = new ConfigManager();
-    const manager = configManager;
-    const history = await manager.getHistory();
+    const history = await configManager.getHistory();
 
     if (history.changes.length === 0) {
       console.log(chalk.yellow('No change history available.'));
@@ -13,7 +13,7 @@ export default async function historyCommand(options) {
     }
 
     console.log(chalk.blue('\nChange History:'));
-    const limit = parseInt(options.limit) || 20;
+    const limit = parseInt(options.limit || '20') || 20;
     history.changes.slice(0, limit).forEach(change => {
       const timestamp = new Date(change.timestamp).toLocaleString();
       const action = change.action.toUpperCase();
@@ -22,7 +22,8 @@ export default async function historyCommand(options) {
     });
     console.log('');
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }

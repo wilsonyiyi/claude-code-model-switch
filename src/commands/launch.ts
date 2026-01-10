@@ -1,10 +1,12 @@
 import chalk from 'chalk';
 import { launchClaude } from '../utils/claudeLauncher.js';
+import type ModelManager from '../modelManager.js';
+import type { LaunchResult } from '../types.js';
 
 /**
  * Handles the automatic launch when no arguments are provided
  */
-export async function autoLaunchClaude(modelManager, processArgv) {
+export async function autoLaunchClaude(modelManager: ModelManager, processArgv: string[]): Promise<LaunchResult> {
   try {
     const currentModel = await modelManager.getCurrentModel();
     const models = await modelManager.listModels();
@@ -25,7 +27,8 @@ export async function autoLaunchClaude(modelManager, processArgv) {
 
     return { shouldExit: true, exitCode };
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     return { shouldExit: true, exitCode: 1 };
   }
 }

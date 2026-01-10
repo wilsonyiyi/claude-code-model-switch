@@ -1,6 +1,7 @@
 import chalk from 'chalk';
+import type ModelManager from '../modelManager.js';
 
-export default async function currentCommand(modelManager) {
+export default async function currentCommand(modelManager: ModelManager): Promise<void> {
   try {
     const model = await modelManager.getCurrentModel();
 
@@ -15,10 +16,11 @@ export default async function currentCommand(modelManager) {
       console.log(`  Description: ${model.description}`);
     }
     console.log(`  Base URL: ${model.baseUrl}`);
-    console.log(chalk.gray(`  Last used: ${new Date(model.lastUsed).toLocaleString()}`));
+    console.log(chalk.gray(`  Last used: ${model.lastUsed ? new Date(model.lastUsed).toLocaleString() : 'Never'}`));
     console.log('');
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }

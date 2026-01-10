@@ -1,6 +1,8 @@
 import chalk from 'chalk';
+import type ModelManager from '../modelManager.js';
+import type { ListCommandOptions } from '../types.js';
 
-export default async function listCommand(modelManager, options = {}) {
+export default async function listCommand(modelManager: ModelManager, options: ListCommandOptions = {}): Promise<void> {
   try {
     const models = await modelManager.listModels();
     const currentModel = await modelManager.getCurrentModel();
@@ -14,14 +16,15 @@ export default async function listCommand(modelManager, options = {}) {
     models.forEach(model => {
       const isCurrent = currentModel && currentModel.name === model.name;
       if (options.full) {
-        console.log(modelManager.formatModelFull(model, isCurrent));
+        console.log(modelManager.formatModelFull(model, isCurrent || false));
       } else {
-        console.log(modelManager.formatModel(model, isCurrent));
+        console.log(modelManager.formatModel(model, isCurrent || false));
       }
     });
     console.log('');
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`Error: ${message}`));
     process.exit(1);
   }
 }
