@@ -16,6 +16,7 @@ import useCommand from './commands/use.js';
 import providerCommand from './commands/provider.js';
 import { interactiveCommand } from './commands/interactive.js';
 import { autoLaunchClaude } from './commands/launch.js';
+import { setupCompletion, completionCommand } from './commands/completion.js';
 
 // Use createRequire for JSON imports (ESM doesn't natively support JSON)
 const require = createRequire(import.meta.url);
@@ -23,6 +24,9 @@ const pkg = require('../package.json');
 
 const program = new Command();
 const modelManager = new ModelManager();
+
+// Setup completion
+const completion = setupCompletion(modelManager);
 
 program
   .name('cm')
@@ -41,6 +45,12 @@ if (args.length === 0) {
     process.exit(result.exitCode || 0);
   }
 }
+
+// Completion command
+program
+  .command('completion')
+  .description('Setup shell autocompletion')
+  .action(() => completionCommand(completion));
 
 // Provider command (add via preset providers)
 program
