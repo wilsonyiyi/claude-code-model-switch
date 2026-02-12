@@ -68,6 +68,16 @@ cm add -n production \
    cm
    ```
 
+## 自动补全
+
+要启用 shell 自动补全（例如 `cm use <TAB>`），请运行：
+
+```bash
+cm completion
+```
+
+这将启动交互式设置向导，帮助您配置 shell (Bash, Zsh, Fish)。
+
 ## 常用命令
 
 | 命令 | 描述 | 示例 |

@@ -28,6 +28,10 @@ class ConfigManager {
   }
 
   getConfigDir(): string {
+    if (process.env.CM_CONFIG_DIR) {
+      return process.env.CM_CONFIG_DIR;
+    }
+
     const platform = os.platform();
 
     if (platform === 'win32') {
